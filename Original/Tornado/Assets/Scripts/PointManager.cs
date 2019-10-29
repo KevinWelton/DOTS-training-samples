@@ -55,11 +55,14 @@ public class PointManager : MonoBehaviour {
 		List<List<Matrix4x4>> matricesList = new List<List<Matrix4x4>>();
 		matricesList.Add(new List<Matrix4x4>());
 
-		// buildings
+		// buildings. Make 36 of these. Only the vertices are stored, and not as part of a building. Just a big list of vertices.
+		// 	Pick  random point to start with and go from there.
 		for (int i = 0; i < 35; i++) {
 			int height = Random.Range(4,12);
 			Vector3 pos = new Vector3(Random.Range(-45f,45f),0f,Random.Range(-45f,45f));
 			float spacing = 2f;
+			
+			// Make 3 points at each height.
 			for (int j = 0; j < height; j++) {
 				Point point = new Point();
 				point.x = pos.x+spacing;
@@ -68,6 +71,8 @@ public class PointManager : MonoBehaviour {
 				point.oldX = point.x;
 				point.oldY = point.y;
 				point.oldZ = point.z;
+				
+				// Height of 0 means anchored to the ground.
 				if (j==0) {
 					point.anchor=true;
 				}
@@ -97,7 +102,7 @@ public class PointManager : MonoBehaviour {
 			}
 		}
 
-		// ground details
+		// ground details. Add 600 pairs of points that form ground clutter. Points have no explicit connection.
 		for (int i=0;i<600;i++) {
 			Vector3 pos = new Vector3(Random.Range(-55f,55f),0f,Random.Range(-55f,55f));
 			Point point = new Point();
@@ -124,6 +129,7 @@ public class PointManager : MonoBehaviour {
 
 		int batch = 0;
 
+		// n^2 fun. Go through and determine number of neighbors for a point by finding out how many other points are within a length threshold (bar length)
 		for (int i = 0; i < pointsList.Count; i++) {
 			for (int j = i + 1; j < pointsList.Count; j++) {
 				Bar bar = new Bar();
@@ -138,12 +144,16 @@ public class PointManager : MonoBehaviour {
 						batch++;
 						matricesList.Add(new List<Matrix4x4>());
 					}
+					
+					// Return after 500 bars are calculated so we can get started. Lame.
 					if (barsList.Count % 500 == 0) {
 						yield return null;
 					}
 				}
 			}
 		}
+		
+		// Create a NEW points list that only has points with neighbors that were in range to make a bar.
 		points = new Point[barsList.Count * 2];
 		pointCount = 0;
 		for (int i=0;i<pointsList.Count;i++) {
