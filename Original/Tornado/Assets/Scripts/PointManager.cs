@@ -5,6 +5,7 @@ using UnityEngine;
 public class PointManager : MonoBehaviour {
 	public Material barMaterial;
 	public Mesh barMesh;
+	// Be default this is set to .012 in the project. And it pretty much has to be that unless you want weird behavior.
 	[Range(0f,1f)]
 	public float damping;
 	[Range(0f,1f)]
@@ -190,8 +191,13 @@ public class PointManager : MonoBehaviour {
 		Time.timeScale = 1f;
 	}
 	
+	// Physics crap
 	void FixedUpdate () {
+		// There are two phases: world generation and not world generation.
 		if (generating == false) {
+			// I thought "why clamp this?" so I took out the clamp call. Leave it clamped. This value slowly grows over
+			// time. Once it gets to 1, the tornado is at "max strength". Increasing it further makes the tornado
+			// cat 11.
 			tornadoFader = Mathf.Clamp01(tornadoFader + Time.deltaTime / 10f);
 
 			float invDamping = 1f - damping;
@@ -210,9 +216,13 @@ public class PointManager : MonoBehaviour {
 					float tornadoDist = Mathf.Sqrt(tdx * tdx + tdz * tdz);
 					tdx /= tornadoDist;
 					tdz /= tornadoDist;
+					// If the tornado is too far away, don't consider it as a force at all.
 					if (tornadoDist<tornadoMaxForceDist) {
 						float force = (1f - tornadoDist / tornadoMaxForceDist);
 						float yFader= Mathf.Clamp01(1f - point.y / tornadoHeight);
+						// See above where tornadoFader is defined. Early on, this makes the tornado weaker by
+						// multiplying the normal force (tornadoForce*Random.Range(-.3f, 1.3f) by a value that starts
+						// at 0 early and then builds up over the next 5-10 seconds, clamping at 1.
 						force *= tornadoFader*tornadoForce*Random.Range(-.3f,1.3f);
 						float forceY = tornadoUpForce;
 						point.oldY -= forceY * force;
@@ -238,6 +248,7 @@ public class PointManager : MonoBehaviour {
 				}
 			}
 
+			
 			for (int i = 0; i < bars.Length; i++) {
 				Bar bar = bars[i];
 
@@ -249,8 +260,10 @@ public class PointManager : MonoBehaviour {
 				float dz = point2.z - point1.z;
 
 				float dist = Mathf.Sqrt(dx * dx + dy * dy + dz * dz);
+				
+				// Will these 4 deformations values ever be nonzero in flight, or only when the building hits the
+				// ground / is sucked up?
 				float extraDist = dist - bar.length;
-
 				float pushX = (dx / dist * extraDist) * .5f;
 				float pushY = (dy / dist * extraDist) * .5f;
 				float pushZ = (dz / dist * extraDist) * .5f;
