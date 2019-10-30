@@ -325,6 +325,8 @@ public class PointManager : MonoBehaviour {
 					}
 				}
 
+				//these values dont get referenced ever...
+				//nothing to see here, move along
 				bar.minX = Mathf.Min(point1.x,point2.x);
 				bar.maxX = Mathf.Max(point1.x,point2.x);
 				bar.minY = Mathf.Min(point1.y,point2.y);
