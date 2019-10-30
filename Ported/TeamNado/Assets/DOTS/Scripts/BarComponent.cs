@@ -2,10 +2,16 @@
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using UnityEngine;
 
 [Serializable]
 public struct BarComponent : IComponentData
 {
+    public Vector3 point1;
+    public Vector3 point2;
+    
+
+    public Matrix4x4 transform;
     // Add fields to your component here. Remember that:
     //
     // * A component itself is for storing data and doesn't 'do' anything.
@@ -19,6 +25,6 @@ public struct BarComponent : IComponentData
     // * You should focus on the data structure that makes the most sense
     //   for runtime use here. Authoring Components will be used for 
     //   authoring the data in the Editor.
-    
-    
+
+
 }
