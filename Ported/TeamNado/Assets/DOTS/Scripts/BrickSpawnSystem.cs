@@ -23,7 +23,7 @@ public class BrickSpawnSystem : JobComponentSystem
         // Cache the BeginInitializationEntityCommandBufferSystem in a field, so we don't have to create it every frame
         m_EntityCommandBufferSystem = World.GetOrCreateSystem<BeginInitializationEntityCommandBufferSystem>();
     }
-    [BurstCompile]
+    
     struct BrickSpawnSystemJob : IJobForEachWithEntity<SpawnComponent, LocalToWorld>
     {
         // Add fields here that your job needs to do its work.
@@ -32,7 +32,7 @@ public class BrickSpawnSystem : JobComponentSystem
         public EntityCommandBuffer.Concurrent CommandBuffer;
         
         
-        
+        [BurstCompile]
         public void Execute(Entity entity, int index, [ReadOnly] ref SpawnComponent SpawnComp,
             [ReadOnly] ref LocalToWorld location)
         {
