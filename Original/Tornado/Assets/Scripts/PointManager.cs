@@ -243,14 +243,16 @@ public class PointManager : MonoBehaviour {
 
 				Point point1 = bar.point1;
 				Point point2 = bar.point2;
-
+				//the length of the bar
 				float dx = point2.x - point1.x;
 				float dy = point2.y - point1.y;
 				float dz = point2.z - point1.z;
-
+				//dist is length of the bar after ALL forces were applied to it
 				float dist = Mathf.Sqrt(dx * dx + dy * dy + dz * dz);
+				//extra dist is the amount of stretch
 				float extraDist = dist - bar.length;
-
+				
+				//
 				float pushX = (dx / dist * extraDist) * .5f;
 				float pushY = (dy / dist * extraDist) * .5f;
 				float pushZ = (dz / dist * extraDist) * .5f;
