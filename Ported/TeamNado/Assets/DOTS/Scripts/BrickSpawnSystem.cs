@@ -23,7 +23,7 @@ public class BrickSpawnSystem : JobComponentSystem
         // Cache the BeginInitializationEntityCommandBufferSystem in a field, so we don't have to create it every frame
         m_EntityCommandBufferSystem = World.GetOrCreateSystem<BeginInitializationEntityCommandBufferSystem>();
     }
-    
+  
     struct BrickSpawnSystemJob : IJobForEachWithEntity<SpawnComponent, LocalToWorld>
     {
         // Add fields here that your job needs to do its work.

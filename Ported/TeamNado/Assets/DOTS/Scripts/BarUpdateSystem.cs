@@ -17,7 +17,6 @@ public class BarUpdateSystem : JobComponentSystem
     //
     // The job is also tagged with the BurstCompile attribute, which means
     // that the Burst compiler will optimize it for the best performance.
-    [BurstCompile]
     struct BarUpdateSystemJob : IJobForEach<BarComponent, Translation>
     {
         // Add fields here that your job needs to do its work.
@@ -26,6 +25,7 @@ public class BarUpdateSystem : JobComponentSystem
 
         public float deltaTime;
         
+        [BurstCompile]
         public void Execute(ref BarComponent barComp, ref Translation translation)
         {
             // Implement the work to perform for each entity here.

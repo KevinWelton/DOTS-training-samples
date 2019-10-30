@@ -1,18 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
+using Unity.Collections;
+using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
 
-public class ClutterComponent : MonoBehaviour
+[Serializable]
+public struct ClutterComponent : IComponentData
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public Vector3 position;
+    public float scale;
+    public float colorSaturation;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    internal Vector3 velocity;
+
+    public Matrix4x4 transform;
 }
