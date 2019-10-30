@@ -16,8 +16,8 @@ public class ConvertBarPrefab : MonoBehaviour, IConvertGameObjectToEntity
     //
     // For example,
     //    public float scale;
-    public Vector3 tpoint1 = new Vector3(0,0,0);
-    public Vector3 tpoint2 = new Vector3(0,0,0);
+    public float3 tpoint1 = new Vector3(0,0,0);
+    public float3 tpoint2 = new Vector3(0,0,0);
     public Matrix4x4 ttransform = new Matrix4x4(Vector4.zero, Vector4.zero, Vector4.zero, Vector4.zero);
     
 
