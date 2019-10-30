@@ -44,6 +44,7 @@ public class PointManager : MonoBehaviour {
 		cam = Camera.main.transform;
 	}
 
+	// The magic sine wave. We should use this I think. I defer to the tornado master.
 	public static float TornadoSway(float y) {
 		return Mathf.Sin(y / 5f + Time.time/4f) * 3f;
 	}
@@ -196,8 +197,8 @@ public class PointManager : MonoBehaviour {
 		// There are two phases: world generation and not world generation.
 		if (generating == false) {
 			// I thought "why clamp this?" so I took out the clamp call. Leave it clamped. This value slowly grows over
-			// time. Once it gets to 1, the tornado is at "max strength". Increasing it further makes the tornado
-			// cat 11.
+			//   time. Once it gets to 1, the tornado is at "max strength". Increasing it further makes the tornado
+			//   cat 11.
 			tornadoFader = Mathf.Clamp01(tornadoFader + Time.deltaTime / 10f);
 
 			float invDamping = 1f - damping;
@@ -210,7 +211,9 @@ public class PointManager : MonoBehaviour {
 
 					point.oldY += .01f;
 
-					// tornado force
+					// tornado force. The tornado does not seem to actually pull differently at differet heights. It 
+					//   DOES however have sway, which is a sine wave that will act as an offset at different heights.
+					//   The sine wave does not appear to rotate though. If we could do that it would look even better.
 					float tdx = tornadoX+TornadoSway(point.y) - point.x;
 					float tdz = tornadoZ - point.z;
 					float tornadoDist = Mathf.Sqrt(tdx * tdx + tdz * tdz);
@@ -221,8 +224,8 @@ public class PointManager : MonoBehaviour {
 						float force = (1f - tornadoDist / tornadoMaxForceDist);
 						float yFader= Mathf.Clamp01(1f - point.y / tornadoHeight);
 						// See above where tornadoFader is defined. Early on, this makes the tornado weaker by
-						// multiplying the normal force (tornadoForce*Random.Range(-.3f, 1.3f) by a value that starts
-						// at 0 early and then builds up over the next 5-10 seconds, clamping at 1.
+						//   multiplying the normal force (tornadoForce*Random.Range(-.3f, 1.3f) by a value that starts
+						//   at 0 early and then builds up over the next 5-10 seconds, clamping at 1.
 						force *= tornadoFader*tornadoForce*Random.Range(-.3f,1.3f);
 						float forceY = tornadoUpForce;
 						point.oldY -= forceY * force;
