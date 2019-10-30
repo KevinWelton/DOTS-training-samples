@@ -24,7 +24,7 @@ public class BrickSpawnSystem : JobComponentSystem
         m_EntityCommandBufferSystem = World.GetOrCreateSystem<BeginInitializationEntityCommandBufferSystem>();
     }
   
-    struct BrickSpawnSystemJob : IJobForEachWithEntity<SpawnComponent, LocalToWorld>
+    struct BrickSpawnSystemJob : IJobForEachWithEntity<SpawnBarComponent, LocalToWorld>
     {
         // Add fields here that your job needs to do its work.
         // For example,
@@ -33,7 +33,7 @@ public class BrickSpawnSystem : JobComponentSystem
         
         
         [BurstCompile]
-        public void Execute(Entity entity, int index, [ReadOnly] ref SpawnComponent SpawnComp,
+        public void Execute(Entity entity, int index, [ReadOnly] ref SpawnBarComponent SpawnComp,
             [ReadOnly] ref LocalToWorld location)
         {
             // Implement the work to perform for each entity here.

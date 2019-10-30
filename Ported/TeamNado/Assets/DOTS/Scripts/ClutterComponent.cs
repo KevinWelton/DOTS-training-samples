@@ -7,11 +7,11 @@ using UnityEngine;
 [Serializable]
 public struct ClutterComponent : IComponentData
 {
-    public Vector3 position;
+    public float3 position;
     public float scale;
     public float colorSaturation;
 
-    internal Vector3 velocity;
+    internal float3 velocity;
 
-    public Matrix4x4 transform;
+    public float4x4 transform;
 }
