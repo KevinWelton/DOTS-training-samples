@@ -9,7 +9,7 @@ public struct BarComponent : IComponentData
 {
     public Vector3 point1;
     public Vector3 point2;
-    
+    internal Vector3 velocity;
 
     public Matrix4x4 transform;
     // Add fields to your component here. Remember that:

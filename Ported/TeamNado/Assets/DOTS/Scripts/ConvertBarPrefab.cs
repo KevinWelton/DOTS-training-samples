@@ -33,6 +33,6 @@ public class ConvertBarPrefab : MonoBehaviour, IConvertGameObjectToEntity
         // For example,
         //   dstManager.AddComponentData(entity, new Unity.Transforms.Scale { Value = scale });
         var data = new BarComponent{point1 = tpoint1, point2 = tpoint2, transform = ttransform};
-        
+        dstManager.AddComponentData(entity, data);
     }
 }
