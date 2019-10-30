@@ -24,6 +24,15 @@ public class BarUpdateSystem : JobComponentSystem
         //    public float deltaTime;
 
         public float deltaTime;
+
+        private const float tornadoMaxForceDistance = 30;
+        private const float upForce = 1.4f;
+        private const float inwardForce = 9.0f;
+        private const float tornadoHeight = 50.0f;
+        private const float friction = 0.4f;
+        private const float damping = 0.012f;
+        private const float maxForce = 30.0f;
+        private const float gravity = 1.0f;
         
         [BurstCompile]
         public void Execute(ref BarComponent barComp, ref Translation translation)
