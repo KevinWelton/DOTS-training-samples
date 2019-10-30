@@ -33,7 +33,7 @@ public class ClutterSpawnSystem : JobComponentSystem
         
         
         [BurstCompile]
-        public void Execute(Entity entity, int index, [ReadOnly] ref SpawnClutterComponent SpawnComp,
+        public void Execute(Entity entity, int index, [ReadOnly] ref SpawnClutterComponent comp,
             [ReadOnly] ref LocalToWorld location)
         {
             // Implement the work to perform for each entity here.
@@ -44,21 +44,37 @@ public class ClutterSpawnSystem : JobComponentSystem
             // that want to read Rotation component data.
             // For example,
             //     translation.Value += mul(rotation.Value, new float3(0, 0, 1)) * deltaTime;
-            for (var x = 0; x < SpawnComp.Count; x++)
-            {
-                for (var y = 0; y < SpawnComp.Count; y++)
-                {
-                    var instance = CommandBuffer.Instantiate(index, SpawnComp.Prefab);
 
-                    // Place the instantiated in a grid with some noise
-                    var position = math.transform(location.Value,
-                        new float3(x * 1.3F, noise.cnoise(new float2(x, y) * 0.21F) * 2, y * 1.3F));
-                    CommandBuffer.SetComponent(index, instance, new Translation {Value = position});
-                }
+            for (int i = 0; i < comp.Count; i++)
+            {
+                var instance = CommandBuffer.Instantiate(index, comp.Prefab);
+
+                // Uniform start http://mathworld.wolfram.com/ConicalSpiral.html
+
+                var a = i / (2 * 3.14) / comp.Count;
+                var t = comp.Height * i / comp.Count;
+
+                var position = math.transform(location.Value,
+                    new float3(t*(float)math.cos(a*t), t, t * (float)math.sin(a * t)));
+
+                CommandBuffer.SetComponent(index, instance, new Translation { Value = position });
             }
+            //for (var x = 0; x < comp.Count; x++)
+            //{
+            //    for (var y = 0; y < SpawnComp.Count; y++)
+            //    {
+            //        var instance = CommandBuffer.Instantiate(index, SpawnComp.Prefab);
+
+            //        // Place the instantiated in a grid with some noise
+            //        var position = math.transform(location.Value,
+            //            new float3(x * 1.3F, noise.cnoise(new float2(x, y) * 0.21F) * 2, y * 1.3F));
+            //        CommandBuffer.SetComponent(index, instance, new Translation {Value = position});
+            //    }
+            //}
+
+
 
             CommandBuffer.DestroyEntity(index, entity);
-            
         }
     }
     
