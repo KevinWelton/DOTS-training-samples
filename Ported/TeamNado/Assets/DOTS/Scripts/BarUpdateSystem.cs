@@ -97,11 +97,19 @@ public class BarUpdateSystem : JobComponentSystem
 	        float tornadoDist = Mathf.Sqrt(tdx * tdx + tdz * tdz);
 	        //tdx and tdz are the components of a unit vector towards the tornado
 	        
+	        //at the beginning of the frame, the bar undergoes gravity
+	        //barComp.velocity.y = TornadoConstants.Gravity;
+	        //float yAccel = TornadoConstants.Gravity;
+	        
 	        //distance in the x and z direction from the nado
 	        tdx /= tornadoDist;
 	        tdz /= tornadoDist;
 
-	        float forceY = TornadoConstants.Gravity;
+	        float forceY = 0;
+	        if (translation.Value.y > 0.1)
+	        {
+		        forceY += TornadoConstants.Gravity;
+	        }
 	        // If the tornado is too far away, don't consider it as a force at all.
 	        if (tornadoDist<TornadoConstants.TornadoMaxForceDistance) {
 		        
@@ -115,10 +123,10 @@ public class BarUpdateSystem : JobComponentSystem
 		        
 		        
 		        
-		        if (force > TornadoConstants.MaxForce)
-		        {
-			        force = TornadoConstants.MaxForce;
-		        }
+		        //if (force > TornadoConstants.MaxForce)
+		        //{
+			    //    force = TornadoConstants.MaxForce;
+		        //}
 		        
 		        //force is now the force we want applied to the bars
 		        
@@ -131,10 +139,11 @@ public class BarUpdateSystem : JobComponentSystem
 		        
 		        if (translation.Value.y < TornadoConstants.TornadoHeight)
 		        {
-			        forceY += TornadoConstants.UpForce *
-			                  (1f - tornadoDist); ///TornadoConstants.TornadoMaxForceDistance);
+			        forceY += TornadoConstants.UpForce * Mathf.Clamp(( 3/tornadoDist),0,1);
+			        //forceY = TornadoConstants.UpForce * (1/tornadoDist);//TornadoConstants.TornadoMaxForceDistance);
 		        }
 
+		        //forceY += yAccel;
 /*
 		        if (forceX > TornadoConstants.MaxForce)
 		        {
@@ -147,15 +156,15 @@ public class BarUpdateSystem : JobComponentSystem
 */
 		        barComp.velocity.x += forceX;
 		        barComp.velocity.z += forceZ;
-		        
+		        barComp.velocity.y += forceY;
 		        //OLD VALUES NOT REALLY USED!!!
-		        
-		        
-		        
+
+
+
 		        //float3 tempForce = new float3(-tdz + tdx, forceY, tdx + tdz) * force;
 		        //barComp.oldX -= forceX;
 		        //barComp.oldZ -= forceZ;
-				//technically new position
+		        //technically new position
 		        //barComp.oldX -= forceX * deltaTime;
 		        //barComp.oldY -= forceZ * deltaTime;
 		        //
