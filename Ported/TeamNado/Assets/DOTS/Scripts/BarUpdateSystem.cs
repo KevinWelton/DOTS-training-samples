@@ -92,8 +92,8 @@ public class BarUpdateSystem : JobComponentSystem
 	        float startY = translation.Value.y;
 	        float startZ = translation.Value.z;
 	        
-	        float tdx = tornadoComp.tornadoPos.x - translation.Value.x;
-	        float tdz = tornadoComp.tornadoPos.z - translation.Value.z;
+	        float tdx = (tornadoComp.tornadoPos.x - translation.Value.x);
+	        float tdz = (tornadoComp.tornadoPos.z - translation.Value.z);
 	        float tornadoDist = Mathf.Sqrt(tdx * tdx + tdz * tdz);
 	        //tdx and tdz are the components of a unit vector towards the tornado
 	        
@@ -110,7 +110,7 @@ public class BarUpdateSystem : JobComponentSystem
 		        // See above where tornadoFader is defined. Early on, this makes the tornado weaker by
 		        //   multiplying the normal force (tornadoForce*Random.Range(-.3f, 1.3f) by a value that starts
 		        //   at 0 early and then builds up over the next 5-10 seconds, clamping at 1.
-		        force *= TornadoConstants.InwardForce * random.NextFloat(-.3f, 1.3f);//Range(-.3f,1.3f);
+		        force *= 0.22f * random.NextFloat(-.3f, 1.3f);//Range(-.3f,1.3f);
 		        
 		        
 		        
@@ -122,8 +122,9 @@ public class BarUpdateSystem : JobComponentSystem
 		        
 		        //force is now the force we want applied to the bars
 		        
-		        float forceX = -tdz + tdx * force * yFader;
-		        float forceZ = tdx + tdz * force * yFader;
+		        
+		        float forceX = tdx * force * TornadoConstants.InwardForce * yFader;//-tdz + tdx * force * TornadoConstants.InwardForce * yFader;
+		        float forceZ = tdz * force  * TornadoConstants.InwardForce *yFader;//tdx + tdz * force  * TornadoConstants.InwardForce *yFader;
 		        
 		        //forceX and forceZ are the component force vectors we want applied
 
@@ -133,9 +134,16 @@ public class BarUpdateSystem : JobComponentSystem
 			        forceY += TornadoConstants.UpForce * (1f - tornadoDist/TornadoConstants.TornadoMaxForceDistance);
 		        }
 
-
-
-
+/*
+		        if (forceX > TornadoConstants.MaxForce)
+		        {
+			        forceX = TornadoConstants.MaxForce;
+		        }
+		        if (forceZ > TornadoConstants.MaxForce)
+		        {
+			        forceZ = TornadoConstants.MaxForce;
+		        }
+*/
 		        barComp.velocity.x += forceX;
 		        barComp.velocity.z += forceZ;
 		        
@@ -163,17 +171,35 @@ public class BarUpdateSystem : JobComponentSystem
 	        //translation.Value.z = (barComp.velocity.z * deltaTime) * (1f - TornadoConstants.Damping);
 			else
 	        {
-		        barComp.velocity.x = 0;
-		        barComp.velocity.z =0;
+		        if (barComp.velocity.x > 0)
+		        {
+			        barComp.velocity.x -= TornadoConstants.Friction;
+		        }
+		        else if (barComp.velocity.x < 0)
+		        {
+			        barComp.velocity.x += TornadoConstants.Friction;
+		        }
+		        if (barComp.velocity.z> 0)
+		        {
+			        barComp.velocity.z -= TornadoConstants.Friction;
+		        }
+		        else if (barComp.velocity.z < 0)
+		        {
+			        barComp.velocity.z += TornadoConstants.Friction;
+		        }
+		        //barComp.velocity.x = 0;
+		        //barComp.velocity.z =0;
 	        }
 
 	        //gravity is always applied
 	        barComp.velocity.y += forceY * deltaTime;
+
+
 	        
 	        //this is dumb.
-	        translation.Value.x -= barComp.velocity.x * deltaTime;//(translation.Value.x - barComp.oldX) * (1f - TornadoConstants.Damping);
-	        translation.Value.y += barComp.velocity.y * deltaTime;//(translation.Value.y - barComp.oldY) * (1f - TornadoConstants.Damping);
-	        translation.Value.z -= barComp.velocity.z * deltaTime;//(translation.Value.z - barComp.oldZ) * (1f - TornadoConstants.Damping);
+	        translation.Value.x -= barComp.velocity.x * deltaTime * (1f - TornadoConstants.Damping);//(translation.Value.x - barComp.oldX) * (1f - TornadoConstants.Damping);
+	        translation.Value.y += barComp.velocity.y * deltaTime;//* (1f - TornadoConstants.Damping);//(translation.Value.y - barComp.oldY) * (1f - TornadoConstants.Damping);
+	        translation.Value.z -= barComp.velocity.z * deltaTime* (1f - TornadoConstants.Damping);//(translation.Value.z - barComp.oldZ) * (1f - TornadoConstants.Damping);
 
 	        barComp.oldX = startX;
 	        barComp.oldY = startY;
