@@ -306,7 +306,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6051f410e7690d84c9dd5706c669bad5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Prefab: {fileID: 3077885376246366674, guid: a8fc1fcb52277dc42a6445baa2661661, type: 3}
+  PrefabA: {fileID: 3077885376246366674, guid: a8fc1fcb52277dc42a6445baa2661661, type: 3}
+  PrefabB: {fileID: 3077885376246366674, guid: 259b974fa4301ff49a186b8bd14d3139, type: 3}
+  PrefabC: {fileID: 3077885376246366674, guid: a8fc1fcb52277dc42a6445baa2661661, type: 3}
+  PrefabD: {fileID: 3077885376246366674, guid: 259b974fa4301ff49a186b8bd14d3139, type: 3}
+  PrefabE: {fileID: 3077885376246366674, guid: a8fc1fcb52277dc42a6445baa2661661, type: 3}
   Count: 10
 --- !u!114 &1846139437
 MonoBehaviour:
