@@ -29,5 +29,10 @@ public class SpawnClutterAuthorConvert : MonoBehaviour, IDeclareReferencedPrefab
             Radius = 4f,
         };
         dstManager.AddComponentData(entity, spawnerData);
+
+        //var tornadoComponent = new TornadoComponent()
+        //{
+        //};
+        //dstManager.AddComponentData(entity, tornadoComponent);
     }
 }
