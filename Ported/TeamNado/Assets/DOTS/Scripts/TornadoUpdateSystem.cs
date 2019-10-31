@@ -7,6 +7,7 @@ using Unity.Transforms;
 using UnityEngine;
 using static Unity.Mathematics.math;
 
+[UpdateInGroup(typeof(SimulationSystemGroup))]
 public class TornadoUpdateSystem : JobComponentSystem
 {
     // This declares a new kind of job, which is a unit of work to do.

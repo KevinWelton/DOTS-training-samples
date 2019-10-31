@@ -1,4 +1,5 @@
-﻿using Unity.Burst;
+﻿//using System.Data.OleDb;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
@@ -8,9 +9,11 @@ using UnityEngine;
 using static Unity.Mathematics.math;
 using Random = Unity.Mathematics.Random;
 
+//[UpdateInGroup(typeof(SimulationSystemGroup))]
+//[UpdateAfter(typeof(BarSuckSystem))]
 public class BarUpdateSystem : JobComponentSystem
 {
-    // This declares a new kind of job, which is a unit of work to do.
+	// This declares a new kind of job, which is a unit of work to do.
     // The job is declared as an IJobForEach<Translation, Rotation>,
     // meaning it will process all entities in the world that have both
     // Translation and Rotation components. Change it to process the component
@@ -18,7 +21,7 @@ public class BarUpdateSystem : JobComponentSystem
     //
     // The job is also tagged with the BurstCompile attribute, which means
     // that the Burst compiler will optimize it for the best performance.
-    struct BarUpdateSystemJob : IJobForEach<BarComponent,TornadoComponent,  Translation>
+    struct BarUpdateSystemJob : IJobForEach<BarComponent, SuckedBarComponent, TornadoComponent, Translation>
     {
         // Add fields here that your job needs to do its work.
         // For example,
@@ -28,7 +31,7 @@ public class BarUpdateSystem : JobComponentSystem
 	    
         
         [BurstCompile]
-        public void Execute(ref BarComponent barComp, ref TornadoComponent tornadoComp, ref Translation translation)
+        public void Execute(ref BarComponent barComp, [ReadOnly] ref SuckedBarComponent unused, ref TornadoComponent tornadoComp, ref Translation translation)
         {
             // Implement the work to perform for each entity here.
             // You should only access data that is local or that is a
@@ -87,10 +90,15 @@ public class BarUpdateSystem : JobComponentSystem
 						point.oldZ += (point.z - point.oldZ) * friction;
 					}
              */
+	        
+	        
             var random = new Random(1);
 	        float startX = translation.Value.x;
 	        float startY = translation.Value.y;
 	        float startZ = translation.Value.z;
+
+	        float shearX = 0f;
+	        float shearZ = 0f;
 	        
 	        float tdx = (tornadoComp.tornadoPos.x - translation.Value.x);
 	        float tdz = (tornadoComp.tornadoPos.z - translation.Value.z);
@@ -134,32 +142,30 @@ public class BarUpdateSystem : JobComponentSystem
 		        float forceX = tdx * force * TornadoConstants.InwardForce * yFader;//-tdz + tdx * force * TornadoConstants.InwardForce * yFader;
 		        float forceZ = tdz * force * TornadoConstants.InwardForce * yFader;//tdx + tdz * force  * TornadoConstants.InwardForce *yFader;
 		        
+		        
+		        
+		        //OK, tornadoes do a little bit of shear force to make it spin right round
+		        shearX += -tdz + tdx *  force * 0.0001f;
+		        shearZ += tdx + tdz * force* 0.0001f;
+		        
+		        
 		        //forceX and forceZ are the component force vectors we want applied
 
 		        
 		        if (translation.Value.y < TornadoConstants.TornadoHeight)
 		        {
-			        forceY += TornadoConstants.UpForce * Mathf.Clamp(( 3/tornadoDist),0,1);
+			        forceY += TornadoConstants.UpForce * Mathf.Clamp(( 7/tornadoDist),0,1);
 			        //forceY = TornadoConstants.UpForce * (1/tornadoDist);//TornadoConstants.TornadoMaxForceDistance);
 		        }
 
 		        //forceY += yAccel;
-/*
-		        if (forceX > TornadoConstants.MaxForce)
-		        {
-			        forceX = TornadoConstants.MaxForce;
-		        }
-		        if (forceZ > TornadoConstants.MaxForce)
-		        {
-			        forceZ = TornadoConstants.MaxForce;
-		        }
-*/
+
 		        barComp.velocity.x += forceX;
 		        barComp.velocity.z += forceZ;
 		        barComp.velocity.y += forceY;
 		        //OLD VALUES NOT REALLY USED!!!
 
-
+				
 
 		        //float3 tempForce = new float3(-tdz + tdx, forceY, tdx + tdz) * force;
 		        //barComp.oldX -= forceX;
@@ -203,14 +209,19 @@ public class BarUpdateSystem : JobComponentSystem
 
 	        //gravity is always applied
 	        barComp.velocity.y += forceY;
+	        //barComp.velocity.x += shearX;
+	        //barComp.velocity.z += shearZ;
 
-
-	        
+	        barComp.velocity.x *=  (1f - TornadoConstants.Damping);
+	        barComp.velocity.z *=  (1f - TornadoConstants.Damping);
 	        //this is dumb.
-	        translation.Value.x -= barComp.velocity.x * deltaTime * (1f - TornadoConstants.Damping);//(translation.Value.x - barComp.oldX) * (1f - TornadoConstants.Damping);
+	        translation.Value.x -= barComp.velocity.x * deltaTime; //* (1f - TornadoConstants.Damping);//(translation.Value.x - barComp.oldX) * (1f - TornadoConstants.Damping);
 	        translation.Value.y += barComp.velocity.y * deltaTime;//* (1f - TornadoConstants.Damping);//(translation.Value.y - barComp.oldY) * (1f - TornadoConstants.Damping);
-	        translation.Value.z -= barComp.velocity.z * deltaTime* (1f - TornadoConstants.Damping);//(translation.Value.z - barComp.oldZ) * (1f - TornadoConstants.Damping);
+	        translation.Value.z -= barComp.velocity.z * deltaTime; //* (1f - TornadoConstants.Damping);//(translation.Value.z - barComp.oldZ) * (1f - TornadoConstants.Damping);
 
+	        //translation.Value.x -= shearX* (1f - TornadoConstants.Damping);
+	        // translation.Value.z -= shearZ* (1f - TornadoConstants.Damping);
+			
 	        barComp.oldX = startX;
 	        barComp.oldY = startY;
 	        barComp.oldZ = startZ;
@@ -221,6 +232,7 @@ public class BarUpdateSystem : JobComponentSystem
 		        barComp.oldZ += (translation.Value.z - barComp.oldZ) * TornadoConstants.Friction;
 	        }
 
+	        
 	        
 
 	        /*
@@ -247,8 +259,7 @@ public class BarUpdateSystem : JobComponentSystem
         //     job.deltaTime = UnityEngine.Time.deltaTime;
 
         job.deltaTime = UnityEngine.Time.deltaTime;
-	    
-        
+
         // Now that the job is set up, schedule it to be run. 
         return job.Schedule(this, inputDependencies);
     }
