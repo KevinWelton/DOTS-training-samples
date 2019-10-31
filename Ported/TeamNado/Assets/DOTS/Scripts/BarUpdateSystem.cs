@@ -25,6 +25,7 @@ public class BarUpdateSystem : JobComponentSystem
         //    public float deltaTime;
 
         public float deltaTime;
+	    public float3 magicTornado;
         
         [BurstCompile]
         public void Execute(ref BarComponent barComp, ref Translation translation)
@@ -37,13 +38,15 @@ public class BarUpdateSystem : JobComponentSystem
             // that want to read Rotation component data.
             // For example,
             //     translation.Value += mul(rotation.Value, new float3(0, 0, 1)) * deltaTime;
-            float3 magicTornado = new Vector3(0,0,0);
+            
             //barComp.velocity 
             
             
             //dx is x distance to tornado
             //dz is z distance to tornado
-            
+            //translation.Value += new float3(-delta.z * tornado.spinRate + delta.x * inForce, tornado.upwardSpeed, delta.x * tornado.spinRate + delta.z * inForce) * deltaTime;
+	        
+	        
 	        //this is raw code i ported
             /*
              * // tornado force. The tornado does not seem to actually pull differently at differet heights. It 
@@ -94,40 +97,80 @@ public class BarUpdateSystem : JobComponentSystem
 	        float tornadoDist = Mathf.Sqrt(tdx * tdx + tdz * tdz);
 	        //tdx and tdz are the components of a unit vector towards the tornado
 	        
+	        //distance in the x and z direction from the nado
 	        tdx /= tornadoDist;
 	        tdz /= tornadoDist;
+	        
+	        float forceY = TornadoConstants.Gravity;
 	        // If the tornado is too far away, don't consider it as a force at all.
 	        if (tornadoDist<TornadoConstants.TornadoMaxForceDistance) {
+		        
 		        float force = (1f - tornadoDist / TornadoConstants.TornadoMaxForceDistance);
 		        float yFader= Mathf.Clamp01(1f - translation.Value.y / TornadoConstants.TornadoHeight);
 		        // See above where tornadoFader is defined. Early on, this makes the tornado weaker by
 		        //   multiplying the normal force (tornadoForce*Random.Range(-.3f, 1.3f) by a value that starts
 		        //   at 0 early and then builds up over the next 5-10 seconds, clamping at 1.
 		        force *= TornadoConstants.InwardForce * random.NextFloat(-.3f, 1.3f);//Range(-.3f,1.3f);
-		        float forceY = TornadoConstants.UpForce;
 		        
+		        
+		        
+		        
+		        if (force > TornadoConstants.MaxForce)
+		        {
+			        force = TornadoConstants.MaxForce;
+		        }
+		        
+		        //force is now the force we want applied to the bars
+		        
+		        float forceX = -tdz + tdx * force * yFader;
+		        float forceZ = tdx + tdz * force * yFader;
+		        
+		        //forceX and forceZ are the component force vectors we want applied
+
+		        
+		        if (translation.Value.y < TornadoConstants.TornadoHeight)
+		        {
+			        forceY += TornadoConstants.UpForce * (1f - tornadoDist / TornadoConstants.TornadoMaxForceDistance);
+		        }
+
+
+
+
+		        barComp.velocity.x += forceX * deltaTime;
+		        barComp.velocity.z += forceZ * deltaTime;
 		        
 		        //OLD VALUES NOT REALLY USED!!!
 		        
-		        barComp.oldY -= forceY * force;
-		        float forceX = -tdz + tdx * TornadoConstants.InwardForce*yFader;
-		        float forceZ = tdx + tdz * TornadoConstants.InwardForce*yFader;
-		        barComp.oldX -= forceX * force;
-		        barComp.oldZ -= forceZ * force;
-		        //
 		        
+		        
+		        //float3 tempForce = new float3(-tdz + tdx, forceY, tdx + tdz) * force;
+		        //barComp.oldX -= forceX;
+		        //barComp.oldZ -= forceZ;
+				//technically new position
+		        //barComp.oldX -= forceX * deltaTime;
+		        //barComp.oldY -= forceZ * deltaTime;
+		        //
+
 		        //IF SOMETHING IS WRONG LOOK HERE!
 		        //barComp.velocity.x += forceX * deltaTime;
 		        //barComp.velocity.y += forceY * deltaTime;
 		        //barComp.velocity.z += forceZ * deltaTime;
 	        }
+	        //gravity is always applied
+	        barComp.velocity.y += forceY * deltaTime;
 			//the previous example found the change in position since last frame, which is the velocity times time
 	        //translation.Value.x = (barComp.velocity.x * deltaTime) * (1f - TornadoConstants.Damping);
 	        //translation.Value.y = (barComp.velocity.y * deltaTime) * (1f - TornadoConstants.Damping);
 	        //translation.Value.z = (barComp.velocity.z * deltaTime) * (1f - TornadoConstants.Damping);
-	        translation.Value.x += (translation.Value.x - barComp.oldX) * (1f - TornadoConstants.Damping);
-	        translation.Value.y += (translation.Value.y - barComp.oldY) * (1f - TornadoConstants.Damping);
-	        translation.Value.z += (translation.Value.z - barComp.oldZ) * (1f - TornadoConstants.Damping);
+
+
+	        barComp.velocity.x -= TornadoConstants.Friction * deltaTime;
+	        barComp.velocity.z -= TornadoConstants.Friction * deltaTime;
+	        
+	        //this is dumb.
+	        translation.Value.x -= barComp.velocity.x * deltaTime;//(translation.Value.x - barComp.oldX) * (1f - TornadoConstants.Damping);
+	        translation.Value.y -= barComp.velocity.y * deltaTime;//(translation.Value.y - barComp.oldY) * (1f - TornadoConstants.Damping);
+	        translation.Value.z -= barComp.velocity.z * deltaTime;//(translation.Value.z - barComp.oldZ) * (1f - TornadoConstants.Damping);
 
 	        barComp.oldX = startX;
 	        barComp.oldY = startY;
@@ -138,9 +181,9 @@ public class BarUpdateSystem : JobComponentSystem
 		        barComp.oldX += (translation.Value.x - barComp.oldX) * TornadoConstants.Friction;
 		        barComp.oldZ += (translation.Value.z - barComp.oldZ) * TornadoConstants.Friction;
 	        }
-	        
-	        
-	        
+
+	        magicTornado.x += 1;
+
 	        /*
 	         * if (point.y < 0f) {
 						point.y = 0f;
@@ -149,8 +192,8 @@ public class BarUpdateSystem : JobComponentSystem
 						point.oldZ += (point.z - point.oldZ) * friction;
 					}
 	         */
-	        
-	        
+
+
 
         }
     }
@@ -165,6 +208,7 @@ public class BarUpdateSystem : JobComponentSystem
         //     job.deltaTime = UnityEngine.Time.deltaTime;
 
         job.deltaTime = UnityEngine.Time.deltaTime;
+	    job.magicTornado.x += 0.5f;
         
         // Now that the job is set up, schedule it to be run. 
         return job.Schedule(this, inputDependencies);
