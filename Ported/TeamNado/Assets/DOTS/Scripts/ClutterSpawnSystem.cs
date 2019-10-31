@@ -49,30 +49,19 @@ public class ClutterSpawnSystem : JobComponentSystem
             {
                 var instance = CommandBuffer.Instantiate(index, comp.Prefab);
 
-                // Uniform start http://mathworld.wolfram.com/ConicalSpiral.html
+                // Uniform start http://mathworld.wolfram.com/ConicalSpiral.html (y, z) reversed
 
-                var a = i / (2 * 3.14) / comp.Count;
-                var t = comp.Height * i / comp.Count;
+                var y = i * comp.Height / comp.Count;
+                var scale = y / comp.Height;
+                var a = 2 * math.PI * i / comp.Count;
 
-                var position = math.transform(location.Value,
-                    new float3(t*(float)math.cos(a*t), t, t * (float)math.sin(a * t)));
+                var x = scale * comp.Radius * (float)math.cos(a);
+                var z = scale * comp.Radius * (float)math.sin(a);
+
+                var position = math.transform(location.Value, new float3(x, y,z));
 
                 CommandBuffer.SetComponent(index, instance, new Translation { Value = position });
             }
-            //for (var x = 0; x < comp.Count; x++)
-            //{
-            //    for (var y = 0; y < SpawnComp.Count; y++)
-            //    {
-            //        var instance = CommandBuffer.Instantiate(index, SpawnComp.Prefab);
-
-            //        // Place the instantiated in a grid with some noise
-            //        var position = math.transform(location.Value,
-            //            new float3(x * 1.3F, noise.cnoise(new float2(x, y) * 0.21F) * 2, y * 1.3F));
-            //        CommandBuffer.SetComponent(index, instance, new Translation {Value = position});
-            //    }
-            //}
-
-
 
             CommandBuffer.DestroyEntity(index, entity);
         }
