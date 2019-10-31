@@ -10,6 +10,9 @@ public struct BarComponent : IComponentData
     public float3 point1;
     public float3 point2;
     internal float3 velocity;
+    internal float oldX;
+    internal float oldY;
+    internal float oldZ;
 
     public Matrix4x4 transform;
     // Add fields to your component here. Remember that:
