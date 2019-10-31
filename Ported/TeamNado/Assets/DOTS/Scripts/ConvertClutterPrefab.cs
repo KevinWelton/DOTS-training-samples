@@ -32,5 +32,6 @@ public class ConvertClutterPrefab : MonoBehaviour, IConvertGameObjectToEntity
         //   dstManager.AddComponentData(entity, new Unity.Transforms.Scale { Value = scale });
         var data = new ClutterComponent();
         dstManager.AddComponentData(entity, data);
+        dstManager.AddComponentData(entity, new TornadoComponent());
     }
 }

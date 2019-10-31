@@ -130,14 +130,14 @@ public class BarUpdateSystem : JobComponentSystem
 		        
 		        if (translation.Value.y < TornadoConstants.TornadoHeight)
 		        {
-			        forceY += TornadoConstants.UpForce * (1f - tornadoDist/TornadoConstants.TornadoMaxForceDistance) * deltaTime;
+			        forceY += TornadoConstants.UpForce * (1f - tornadoDist/TornadoConstants.TornadoMaxForceDistance);
 		        }
 
 
 
 
-		        barComp.velocity.x += forceX * deltaTime;
-		        barComp.velocity.z += forceZ * deltaTime;
+		        barComp.velocity.x += forceX;
+		        barComp.velocity.z += forceZ;
 		        
 		        //OLD VALUES NOT REALLY USED!!!
 		        
@@ -172,7 +172,7 @@ public class BarUpdateSystem : JobComponentSystem
 	        
 	        //this is dumb.
 	        translation.Value.x -= barComp.velocity.x * deltaTime;//(translation.Value.x - barComp.oldX) * (1f - TornadoConstants.Damping);
-	        translation.Value.y -= barComp.velocity.y * deltaTime;//(translation.Value.y - barComp.oldY) * (1f - TornadoConstants.Damping);
+	        translation.Value.y += barComp.velocity.y * deltaTime;//(translation.Value.y - barComp.oldY) * (1f - TornadoConstants.Damping);
 	        translation.Value.z -= barComp.velocity.z * deltaTime;//(translation.Value.z - barComp.oldZ) * (1f - TornadoConstants.Damping);
 
 	        barComp.oldX = startX;

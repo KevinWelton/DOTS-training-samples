@@ -17,7 +17,7 @@ public class ClutterUpdateSystem : JobComponentSystem
     //
     // The job is also tagged with the BurstCompile attribute, which means
     // that the Burst compiler will optimize it for the best performance.
-    struct ClutterUpdateSystemJob : IJobForEach<ClutterComponent, Translation>
+    struct ClutterUpdateSystemJob : IJobForEach<ClutterComponent, TornadoComponent, Translation>
     {
         // Add fields here that your job needs to do its work.
         // For example,
@@ -26,7 +26,7 @@ public class ClutterUpdateSystem : JobComponentSystem
         public float deltaTime;
         
         [BurstCompile]
-        public void Execute(ref ClutterComponent clutterComp, ref Translation translation)
+        public void Execute(ref ClutterComponent clutterComp,ref TornadoComponent tornadoComp, ref Translation translation)
         {
             // Implement the work to perform for each entity here.
             // You should only access data that is local or that is a
@@ -39,6 +39,7 @@ public class ClutterUpdateSystem : JobComponentSystem
 
             //clutterComp.velocity = translation.Value - new float3(0f,0f,0f);
             //translation.Value = clutterComp.velocity * deltaTime;
+            translation.Value = tornadoComp.tornadoPos;
 
         }
     }
