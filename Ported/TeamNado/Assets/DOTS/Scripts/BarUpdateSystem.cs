@@ -101,7 +101,7 @@ public class BarUpdateSystem : JobComponentSystem
 	        tdx /= tornadoDist;
 	        tdz /= tornadoDist;
 
-	        float forceY = 0f;//TornadoConstants.Gravity;
+	        float forceY = TornadoConstants.Gravity;
 	        // If the tornado is too far away, don't consider it as a force at all.
 	        if (tornadoDist<TornadoConstants.TornadoMaxForceDistance) {
 		        
