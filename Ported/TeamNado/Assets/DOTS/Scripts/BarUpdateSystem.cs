@@ -134,12 +134,19 @@ public class BarUpdateSystem : JobComponentSystem
 		        float forceX = tdx * force * TornadoConstants.InwardForce * yFader;//-tdz + tdx * force * TornadoConstants.InwardForce * yFader;
 		        float forceZ = tdz * force * TornadoConstants.InwardForce * yFader;//tdx + tdz * force  * TornadoConstants.InwardForce *yFader;
 		        
+		        
+		        
+		        //OK, tornadoes do a little bit of shear force to make it spin right round
+		        forceX += -tdz + tdx *  force * 0.001f;
+		        forceZ += tdx + tdz * force* 0.001f;
+		        
+		        
 		        //forceX and forceZ are the component force vectors we want applied
 
 		        
 		        if (translation.Value.y < TornadoConstants.TornadoHeight)
 		        {
-			        forceY += TornadoConstants.UpForce * Mathf.Clamp(( 3/tornadoDist),0,1);
+			        forceY += TornadoConstants.UpForce * Mathf.Clamp(( 5/tornadoDist),0,1);
 			        //forceY = TornadoConstants.UpForce * (1/tornadoDist);//TornadoConstants.TornadoMaxForceDistance);
 		        }
 
@@ -159,7 +166,7 @@ public class BarUpdateSystem : JobComponentSystem
 		        barComp.velocity.y += forceY;
 		        //OLD VALUES NOT REALLY USED!!!
 
-
+				
 
 		        //float3 tempForce = new float3(-tdz + tdx, forceY, tdx + tdz) * force;
 		        //barComp.oldX -= forceX;
