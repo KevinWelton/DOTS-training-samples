@@ -39,7 +39,7 @@ public class ClutterUpdateSystem : JobComponentSystem
 
             //clutterComp.velocity = translation.Value - new float3(0f,0f,0f);
             //translation.Value = clutterComp.velocity * deltaTime;
-            translation.Value = tornadoComp.tornadoPos;
+            //translation.Value = tornadoComp.tornadoPos;
 
         }
     }

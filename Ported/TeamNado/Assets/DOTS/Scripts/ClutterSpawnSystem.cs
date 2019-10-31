@@ -17,7 +17,7 @@ public class ClutterSpawnSystem : JobComponentSystem
     // The job is also tagged with the BurstCompile attribute, which means
     // that the Burst compiler will optimize it for the best performance.
     BeginInitializationEntityCommandBufferSystem m_EntityCommandBufferSystem;
-    
+
     protected override void OnCreate()
     {
         // Cache the BeginInitializationEntityCommandBufferSystem in a field, so we don't have to create it every frame
@@ -26,6 +26,7 @@ public class ClutterSpawnSystem : JobComponentSystem
   
     struct ClutterSpawnSystemJob : IJobForEachWithEntity<SpawnClutterComponent, LocalToWorld>
     {
+        public Unity.Mathematics.Random random;
         // Add fields here that your job needs to do its work.
         // For example,
         //    public float deltaTime;
@@ -47,7 +48,19 @@ public class ClutterSpawnSystem : JobComponentSystem
 
             for (int i = 0; i < comp.Count; i++)
             {
-                var instance = CommandBuffer.Instantiate(index, comp.Prefab);
+                Entity instance = CommandBuffer.Instantiate(index, comp.PrefabA);
+
+                // There must be a better way!!!!
+                var r = random.NextInt(5);
+
+                switch (r)
+                {
+                    case 1: instance = CommandBuffer.Instantiate(index, comp.PrefabB); break;
+                    case 2: instance = CommandBuffer.Instantiate(index, comp.PrefabC); break;
+                    case 3: instance = CommandBuffer.Instantiate(index, comp.PrefabD); break;
+                    case 4: instance = CommandBuffer.Instantiate(index, comp.PrefabE); break;
+                    default: break;
+                }
 
                 // Uniform start http://mathworld.wolfram.com/ConicalSpiral.html (y, z) reversed
 
@@ -77,7 +90,8 @@ public class ClutterSpawnSystem : JobComponentSystem
         
         var job = new ClutterSpawnSystemJob
         {
-            CommandBuffer = m_EntityCommandBufferSystem.CreateCommandBuffer().ToConcurrent()
+            CommandBuffer = m_EntityCommandBufferSystem.CreateCommandBuffer().ToConcurrent(),
+            random = new Random(9001)
         }.Schedule(this, inputDependencies);
         
         // Now that the job is set up, schedule it to be run. 

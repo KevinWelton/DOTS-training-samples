@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
 
@@ -7,13 +8,23 @@ using UnityEngine;
 [RequiresEntityConversion]
 public class SpawnClutterAuthorConvert : MonoBehaviour, IDeclareReferencedPrefabs, IConvertGameObjectToEntity
 {
-    public GameObject Prefab;
+    public GameObject PrefabA;
+    public GameObject PrefabB;
+    public GameObject PrefabC;
+    public GameObject PrefabD;
+    public GameObject PrefabE;
+
     public int Count;
+    internal System.Random random = new System.Random();
 
     // Referenced prefabs have to be declared so that the conversion system knows about them ahead of time
     public void DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
     {
-        referencedPrefabs.Add(Prefab);
+        referencedPrefabs.Add(PrefabA);
+        referencedPrefabs.Add(PrefabB);
+        referencedPrefabs.Add(PrefabC);
+        referencedPrefabs.Add(PrefabD);
+        referencedPrefabs.Add(PrefabE);
     }
 
     // Lets you convert the editor data representation to the entity optimal runtime representation
@@ -23,17 +34,17 @@ public class SpawnClutterAuthorConvert : MonoBehaviour, IDeclareReferencedPrefab
         {
             // The referenced prefab will be converted due to DeclareReferencedPrefabs.
             // So here we simply map the game object to an entity reference to that prefab.
-            Prefab = conversionSystem.GetPrimaryEntity(Prefab),
-            Count = Count,
-            Height = 10f,
-            Radius = 4f,
-        };
-        dstManager.AddComponentData(entity, spawnerData);
-        
+            PrefabA = conversionSystem.GetPrimaryEntity(PrefabA),
+            PrefabB = conversionSystem.GetPrimaryEntity(PrefabB),
+            PrefabC = conversionSystem.GetPrimaryEntity(PrefabC),
+            PrefabD = conversionSystem.GetPrimaryEntity(PrefabD),
+            PrefabE = conversionSystem.GetPrimaryEntity(PrefabE),
 
-        //var tornadoComponent = new TornadoComponent()
-        //{
-        //};
-        //dstManager.AddComponentData(entity, tornadoComponent);
+            Count = Count,
+            Height = TornadoConstants.TornadoHeight,
+            Radius = TornadoConstants.TornadoMaxForceDistance,
+        };
+
+        dstManager.AddComponentData(entity, spawnerData);
     }
 }
