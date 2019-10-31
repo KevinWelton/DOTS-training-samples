@@ -11,7 +11,7 @@ public struct ClutterComponent : IComponentData
     public float scale;
     public float colorSaturation;
 
-    internal float3 velocity;
+    internal float angle;
 
     public float4x4 transform;
 }

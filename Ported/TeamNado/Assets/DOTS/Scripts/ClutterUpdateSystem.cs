@@ -6,6 +6,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 using static Unity.Mathematics.math;
+using quaternion = Unity.Mathematics.quaternion;
 
 public class ClutterUpdateSystem : JobComponentSystem
 {
@@ -17,7 +18,7 @@ public class ClutterUpdateSystem : JobComponentSystem
     //
     // The job is also tagged with the BurstCompile attribute, which means
     // that the Burst compiler will optimize it for the best performance.
-    struct ClutterUpdateSystemJob : IJobForEach<ClutterComponent, TornadoComponent, Translation>
+    struct ClutterUpdateSystemJob : IJobForEach<ClutterComponent, TornadoComponent, Translation, Rotation>
     {
         // Add fields here that your job needs to do its work.
         // For example,
@@ -26,7 +27,7 @@ public class ClutterUpdateSystem : JobComponentSystem
         public float deltaTime;
         
         [BurstCompile]
-        public void Execute(ref ClutterComponent clutterComp,ref TornadoComponent tornadoComp, ref Translation translation)
+        public void Execute(ref ClutterComponent clutterComp,ref TornadoComponent tornadoComp, ref Translation translation, ref Rotation rotation)
         {
             // Implement the work to perform for each entity here.
             // You should only access data that is local or that is a
@@ -37,10 +38,11 @@ public class ClutterUpdateSystem : JobComponentSystem
             // For example,
             //     translation.Value += mul(rotation.Value, new float3(0, 0, 1)) * deltaTime;
 
-            //clutterComp.velocity = translation.Value - new float3(0f,0f,0f);
-            //translation.Value = clutterComp.velocity * deltaTime;
-            //translation.Value = tornadoComp.tornadoPos;
-
+            var delta = tornadoComp.tornadoPos - clutterComp.position;
+            translation.Value += delta;
+            clutterComp.angle += deltaTime;
+            clutterComp.position = tornadoComp.tornadoPos;
+            rotation.Value = quaternion.AxisAngle(new float3(0, 1, 0), clutterComp.angle);
         }
     }
     

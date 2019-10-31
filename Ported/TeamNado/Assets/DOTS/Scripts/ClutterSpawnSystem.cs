@@ -5,6 +5,7 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
 using static Unity.Mathematics.math;
+using quaternion = Unity.Mathematics.quaternion;
 
 public class ClutterSpawnSystem : JobComponentSystem
 {
@@ -26,13 +27,12 @@ public class ClutterSpawnSystem : JobComponentSystem
   
     struct ClutterSpawnSystemJob : IJobForEachWithEntity<SpawnClutterComponent, LocalToWorld>
     {
-        public Unity.Mathematics.Random random;
         // Add fields here that your job needs to do its work.
         // For example,
         //    public float deltaTime;
         public EntityCommandBuffer.Concurrent CommandBuffer;
-        
-        
+        public Unity.Mathematics.Random random;
+
         [BurstCompile]
         public void Execute(Entity entity, int index, [ReadOnly] ref SpawnClutterComponent comp,
             [ReadOnly] ref LocalToWorld location)
@@ -71,9 +71,11 @@ public class ClutterSpawnSystem : JobComponentSystem
                 var x = scale * comp.Radius * (float)math.cos(a);
                 var z = scale * comp.Radius * (float)math.sin(a);
 
-                var position = math.transform(location.Value, new float3(x, y,z));
+                var position = math.transform(location.Value, new float3(x, y, z));
+                var axis = new float3(0, 1, 0);
 
                 CommandBuffer.SetComponent(index, instance, new Translation { Value = position });
+                CommandBuffer.SetComponent(index, instance, new Rotation { Value = quaternion.AxisAngle(axis, 0f) });
             }
 
             CommandBuffer.DestroyEntity(index, entity);
