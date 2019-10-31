@@ -24,7 +24,9 @@ public class SpawnClutterAuthorConvert : MonoBehaviour, IDeclareReferencedPrefab
             // The referenced prefab will be converted due to DeclareReferencedPrefabs.
             // So here we simply map the game object to an entity reference to that prefab.
             Prefab = conversionSystem.GetPrimaryEntity(Prefab),
-            Count = Count
+            Count = Count,
+            Height = 10f,
+            Radius = 4f,
         };
         dstManager.AddComponentData(entity, spawnerData);
     }
