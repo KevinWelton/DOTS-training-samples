@@ -31,3 +31,15 @@ public struct BarComponent : IComponentData
 
 
 }
+
+[Serializable]
+public struct UnsuckedBarComponent : IComponentData
+{
+    
+}
+
+[Serializable]
+ public struct SuckedBarComponent : IComponentData
+ {
+     
+ }
