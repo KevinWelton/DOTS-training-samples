@@ -124,14 +124,15 @@ public class BarUpdateSystem : JobComponentSystem
 		        
 		        
 		        float forceX = tdx * force * TornadoConstants.InwardForce * yFader;//-tdz + tdx * force * TornadoConstants.InwardForce * yFader;
-		        float forceZ = tdz * force  * TornadoConstants.InwardForce *yFader;//tdx + tdz * force  * TornadoConstants.InwardForce *yFader;
+		        float forceZ = tdz * force * TornadoConstants.InwardForce * yFader;//tdx + tdz * force  * TornadoConstants.InwardForce *yFader;
 		        
 		        //forceX and forceZ are the component force vectors we want applied
 
 		        
 		        if (translation.Value.y < TornadoConstants.TornadoHeight)
 		        {
-			        forceY += TornadoConstants.UpForce * (1f - tornadoDist/TornadoConstants.TornadoMaxForceDistance);
+			        forceY += TornadoConstants.UpForce *
+			                  (1f - tornadoDist); ///TornadoConstants.TornadoMaxForceDistance);
 		        }
 
 /*
@@ -192,7 +193,7 @@ public class BarUpdateSystem : JobComponentSystem
 	        }
 
 	        //gravity is always applied
-	        barComp.velocity.y += forceY * deltaTime;
+	        barComp.velocity.y += forceY;
 
 
 	        
