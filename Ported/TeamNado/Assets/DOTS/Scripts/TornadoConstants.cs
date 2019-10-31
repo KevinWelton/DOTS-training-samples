@@ -6,7 +6,7 @@ internal static class TornadoConstants
 {
     public const float TornadoMaxForceDistance = 30.0f;
     public const float UpForce = 1.3f;
-    public const float InwardForce = 80.0f;
+    public const float InwardForce = 50f;
     public const float TornadoHeight = 50.0f;
     public const float Friction = 0.4f;
     public const float Damping = 0.012f;

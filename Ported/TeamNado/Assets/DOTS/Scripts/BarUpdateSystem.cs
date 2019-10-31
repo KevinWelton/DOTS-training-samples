@@ -91,6 +91,9 @@ public class BarUpdateSystem : JobComponentSystem
 	        float startX = translation.Value.x;
 	        float startY = translation.Value.y;
 	        float startZ = translation.Value.z;
+
+	        float shearX = 0f;
+	        float shearZ = 0f;
 	        
 	        float tdx = (tornadoComp.tornadoPos.x - translation.Value.x);
 	        float tdz = (tornadoComp.tornadoPos.z - translation.Value.z);
@@ -137,8 +140,8 @@ public class BarUpdateSystem : JobComponentSystem
 		        
 		        
 		        //OK, tornadoes do a little bit of shear force to make it spin right round
-		        forceX += -tdz + tdx *  force * 0.001f;
-		        forceZ += tdx + tdz * force* 0.001f;
+		        shearX += -tdz + tdx *  force * 0.001f;
+		        shearZ += tdx + tdz * force* 0.001f;
 		        
 		        
 		        //forceX and forceZ are the component force vectors we want applied
@@ -218,6 +221,9 @@ public class BarUpdateSystem : JobComponentSystem
 	        translation.Value.y += barComp.velocity.y * deltaTime;//* (1f - TornadoConstants.Damping);//(translation.Value.y - barComp.oldY) * (1f - TornadoConstants.Damping);
 	        translation.Value.z -= barComp.velocity.z * deltaTime* (1f - TornadoConstants.Damping);//(translation.Value.z - barComp.oldZ) * (1f - TornadoConstants.Damping);
 
+	        translation.Value.x -= shearX;
+	        translation.Value.z -= shearZ;
+			
 	        barComp.oldX = startX;
 	        barComp.oldY = startY;
 	        barComp.oldZ = startZ;
