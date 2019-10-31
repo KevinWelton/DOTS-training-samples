@@ -62,8 +62,22 @@ public class BarSpawnSystem : JobComponentSystem
                     float3 point1 = new float3(pos.x + spacing, j * spacing, pos.z - spacing);
                     float3 point2 = new float3(pos.x - spacing, j * spacing, pos.z - spacing);
                     float3 point3 = new float3(pos.x + 0f, j * spacing, pos.z + spacing);
+
                     float3 yAxis = new float3(0f, 1f, 0f);
 
+/*                    var point1Bar = CommandBuffer.Instantiate(index, SpawnComp.Prefab);
+                    var point1BarPosition = math.transform(location.Value, point1);
+                    CommandBuffer.SetComponent(index, point1Bar, new Translation { Value = point1BarPosition });
+                    
+                    var point2Bar = CommandBuffer.Instantiate(index, SpawnComp.Prefab);
+                    var point2BarPosition = math.transform(location.Value, point2);
+                    CommandBuffer.SetComponent(index, point2Bar, new Translation { Value = point2BarPosition });
+                    
+                    var point3Bar = CommandBuffer.Instantiate(index, SpawnComp.Prefab);
+                    var point3BarPosition = math.transform(location.Value, point3);
+                    CommandBuffer.SetComponent(index, point3Bar, new Translation { Value = point3BarPosition });*/
+                    
+                    // floors
                     var instance1 = CommandBuffer.Instantiate(index, SpawnComp.Prefab);
                     var position1 = math.transform(location.Value, new float3(pos.x, j * spacing, pos.z - spacing));
                     CommandBuffer.SetComponent(index, instance1, new Translation { Value = position1 });
@@ -74,13 +88,59 @@ public class BarSpawnSystem : JobComponentSystem
                     var position2 = math.transform(location.Value, new float3(pos.x - spacing / 2, j * spacing, pos.z));
                     CommandBuffer.SetComponent(index, instance2, new Translation { Value = position2 });
                     CommandBuffer.SetComponent(index, instance2, new Rotation { Value = quaternion.AxisAngle(yAxis, 0.5235f) });
-                    CommandBuffer.SetComponent(index, instance1, new BarComponent { point1 = point2, point2 = point3});
+                    CommandBuffer.SetComponent(index, instance2, new BarComponent { point1 = point2, point2 = point3});
 
                     var instance3 = CommandBuffer.Instantiate(index, SpawnComp.Prefab);
                     var position3 = math.transform(location.Value, new float3(pos.x + spacing / 2, j * spacing, pos.z));
                     CommandBuffer.SetComponent(index, instance3, new Translation { Value = position3 });
                     CommandBuffer.SetComponent(index, instance3, new Rotation { Value = quaternion.AxisAngle(yAxis, -0.5235f) });
-                    CommandBuffer.SetComponent(index, instance1, new BarComponent { point1 = point3, point2 = point1});
+                    CommandBuffer.SetComponent(index, instance3, new BarComponent { point1 = point3, point2 = point1});
+
+                    if (j == 0)
+                        continue;
+                    
+                    float3 point1_1 = new float3(pos.x + spacing, (j - 1) * spacing, pos.z - spacing);
+                    float3 point2_2 = new float3(pos.x - spacing, (j - 1) * spacing, pos.z - spacing);
+                    float3 point3_3 = new float3(pos.x + 0f, (j-1) * spacing, pos.z + spacing);
+                    
+                    float3 xAxis = new float3(1f, 0f, 0f);
+                    
+                    // connections
+                    var instance5 = CommandBuffer.Instantiate(index, SpawnComp.Prefab);
+                    var position5 = math.transform(location.Value, new float3(pos.x, (j * 2 - 1) * spacing / 2, pos.z - spacing));
+                    CommandBuffer.SetComponent(index, instance5, new Translation { Value = position5 });
+                    CommandBuffer.SetComponent(index, instance5, new Rotation { Value = quaternion.Euler(-0.4712f, 1.5708f, 0f)});
+                    CommandBuffer.SetComponent(index, instance5, new BarComponent { point1 = point1, point2 = point2_2});
+
+                    var instance6 = CommandBuffer.Instantiate(index, SpawnComp.Prefab);
+                    var position6 = math.transform(location.Value, new float3(pos.x, (j * 2 - 1) * spacing / 2, pos.z - spacing));
+                    CommandBuffer.SetComponent(index, instance6, new Translation { Value = position6 });
+                    CommandBuffer.SetComponent(index, instance6, new Rotation { Value = quaternion.Euler(0.4712f, 1.5708f, 0f)});
+                    CommandBuffer.SetComponent(index, instance6, new BarComponent { point1 = point2, point2 = point1_1});
+
+                    var instance7 = CommandBuffer.Instantiate(index, SpawnComp.Prefab);
+                    var position7 = math.transform(location.Value, new float3(pos.x - spacing / 2, (j * 2 - 1) * spacing / 2, pos.z));
+                    CommandBuffer.SetComponent(index, instance7, new Translation { Value = position7 });
+                    CommandBuffer.SetComponent(index, instance7, new Rotation { Value = quaternion.Euler(-0.4712f, 0.5235f, 0f)});
+                    CommandBuffer.SetComponent(index, instance7, new BarComponent { point1 = point2, point2 = point3_3});
+                    
+                    var instance8 = CommandBuffer.Instantiate(index, SpawnComp.Prefab);
+                    var position8 = math.transform(location.Value, new float3(pos.x - spacing / 2, (j * 2 - 1) * spacing / 2, pos.z));
+                    CommandBuffer.SetComponent(index, instance8, new Translation { Value = position8 });
+                    CommandBuffer.SetComponent(index, instance8, new Rotation { Value = quaternion.Euler(0.4712f, 0.5235f, 0f)});
+                    CommandBuffer.SetComponent(index, instance8, new BarComponent { point1 = point3, point2 = point2_2});
+
+                    var instance9 = CommandBuffer.Instantiate(index, SpawnComp.Prefab);
+                    var position9 = math.transform(location.Value, new float3(pos.x + spacing / 2, (j * 2 - 1) * spacing / 2, pos.z));
+                    CommandBuffer.SetComponent(index, instance9, new Translation { Value = position9 });
+                    CommandBuffer.SetComponent(index, instance9, new Rotation { Value = quaternion.Euler(-0.4712f, -0.5235f, 0f)});
+                    CommandBuffer.SetComponent(index, instance9, new BarComponent { point1 = point3, point2 = point1_1});
+
+                    var instance10 = CommandBuffer.Instantiate(index, SpawnComp.Prefab);
+                    var position10 = math.transform(location.Value, new float3(pos.x + spacing / 2, (j * 2 - 1) * spacing / 2, pos.z));
+                    CommandBuffer.SetComponent(index, instance10, new Translation { Value = position10 });
+                    CommandBuffer.SetComponent(index, instance10, new Rotation { Value = quaternion.Euler(0.4712f, -0.5235f, 0f)});
+                    CommandBuffer.SetComponent(index, instance10, new BarComponent { point1 = point1, point2 = point3_3});
                 }
             }
 
