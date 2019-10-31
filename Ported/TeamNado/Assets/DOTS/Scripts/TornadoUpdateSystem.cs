@@ -41,8 +41,9 @@ public class TornadoUpdateSystem : JobComponentSystem
             //translation.Value = clutterComp.velocity * deltaTime;
             var tornadoX = math.cos(time / 6f) * 30f;
             var tornadoZ = math.sin(time / 6f * 1.618f) * 30f;
-
-            translation.Value += new float3(tornadoX, 0f, tornadoZ);
+            tornadoComp.tornadoPos.x = tornadoX;
+            tornadoComp.tornadoPos.z = tornadoZ;
+            //translation.Value += new float3(tornadoX, 0f, tornadoZ);
         }
     }
     

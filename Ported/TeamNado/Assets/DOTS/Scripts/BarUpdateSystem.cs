@@ -18,17 +18,17 @@ public class BarUpdateSystem : JobComponentSystem
     //
     // The job is also tagged with the BurstCompile attribute, which means
     // that the Burst compiler will optimize it for the best performance.
-    struct BarUpdateSystemJob : IJobForEach<BarComponent, Translation>
+    struct BarUpdateSystemJob : IJobForEach<BarComponent,TornadoComponent,  Translation>
     {
         // Add fields here that your job needs to do its work.
         // For example,
         //    public float deltaTime;
 
         public float deltaTime;
-	    public float3 magicTornado;
+	    
         
         [BurstCompile]
-        public void Execute(ref BarComponent barComp, ref Translation translation)
+        public void Execute(ref BarComponent barComp, ref TornadoComponent tornadoComp, ref Translation translation)
         {
             // Implement the work to perform for each entity here.
             // You should only access data that is local or that is a
@@ -92,8 +92,8 @@ public class BarUpdateSystem : JobComponentSystem
 	        float startY = translation.Value.y;
 	        float startZ = translation.Value.z;
 	        
-	        float tdx = magicTornado.x - translation.Value.x;
-	        float tdz = magicTornado.z - translation.Value.z;
+	        float tdx = tornadoComp.tornadoPos.x - translation.Value.x;
+	        float tdz = tornadoComp.tornadoPos.z - translation.Value.z;
 	        float tornadoDist = Mathf.Sqrt(tdx * tdx + tdz * tdz);
 	        //tdx and tdz are the components of a unit vector towards the tornado
 	        
@@ -185,7 +185,7 @@ public class BarUpdateSystem : JobComponentSystem
 		        barComp.oldZ += (translation.Value.z - barComp.oldZ) * TornadoConstants.Friction;
 	        }
 
-	        magicTornado.x += 1;
+	        
 
 	        /*
 	         * if (point.y < 0f) {
@@ -211,7 +211,7 @@ public class BarUpdateSystem : JobComponentSystem
         //     job.deltaTime = UnityEngine.Time.deltaTime;
 
         job.deltaTime = UnityEngine.Time.deltaTime;
-	    job.magicTornado.x = Time.time * 0.1f;
+	    
         
         // Now that the job is set up, schedule it to be run. 
         return job.Schedule(this, inputDependencies);
