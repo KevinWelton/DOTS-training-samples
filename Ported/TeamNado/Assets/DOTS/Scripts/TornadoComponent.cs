@@ -24,4 +24,5 @@ public struct TornadoComponent : IComponentData
     public float VortexMaxDist;
     public Vector3 Velocity;
     public float totalTime;
+    internal float3 tornadoPos;
 }
