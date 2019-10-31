@@ -36,13 +36,13 @@ public class BarUpdateSystem : JobComponentSystem
             // that want to read Rotation component data.
             // For example,
             //     translation.Value += mul(rotation.Value, new float3(0, 0, 1)) * deltaTime;
-            float3 magicTornado = new Vector3(0,0,0);
+/*            float3 magicTornado = new Vector3(0,0,0);
             //barComp.velocity 
             float3 direction = -(translation.Value - new float3(magicTornado.x, translation.Value.y, magicTornado.z));
             barComp.velocity += math.normalize(direction) * 0.1f;
             float3 temp = barComp.velocity * deltaTime;
             translation.Value += new float3(temp.x,temp.y + 0.001f,temp.z);
-            translation.Value += (float3)temp;
+            translation.Value += (float3)temp;*/
 
         }
     }
