@@ -9,9 +9,11 @@ using UnityEngine;
 using static Unity.Mathematics.math;
 using Random = Unity.Mathematics.Random;
 
+//[UpdateInGroup(typeof(SimulationSystemGroup))]
+//[UpdateAfter(typeof(BarSuckSystem))]
 public class BarUpdateSystem : JobComponentSystem
 {
-    // This declares a new kind of job, which is a unit of work to do.
+	// This declares a new kind of job, which is a unit of work to do.
     // The job is declared as an IJobForEach<Translation, Rotation>,
     // meaning it will process all entities in the world that have both
     // Translation and Rotation components. Change it to process the component
@@ -19,7 +21,7 @@ public class BarUpdateSystem : JobComponentSystem
     //
     // The job is also tagged with the BurstCompile attribute, which means
     // that the Burst compiler will optimize it for the best performance.
-    struct BarUpdateSystemJob : IJobForEach<BarComponent,TornadoComponent,  Translation>
+    struct BarUpdateSystemJob : IJobForEach<BarComponent, SuckedBarComponent, TornadoComponent, Translation>
     {
         // Add fields here that your job needs to do its work.
         // For example,
@@ -29,7 +31,7 @@ public class BarUpdateSystem : JobComponentSystem
 	    
         
         [BurstCompile]
-        public void Execute(ref BarComponent barComp, ref TornadoComponent tornadoComp, ref Translation translation)
+        public void Execute(ref BarComponent barComp, [ReadOnly] ref SuckedBarComponent unused, ref TornadoComponent tornadoComp, ref Translation translation)
         {
             // Implement the work to perform for each entity here.
             // You should only access data that is local or that is a
@@ -257,8 +259,7 @@ public class BarUpdateSystem : JobComponentSystem
         //     job.deltaTime = UnityEngine.Time.deltaTime;
 
         job.deltaTime = UnityEngine.Time.deltaTime;
-	    
-        
+
         // Now that the job is set up, schedule it to be run. 
         return job.Schedule(this, inputDependencies);
     }
