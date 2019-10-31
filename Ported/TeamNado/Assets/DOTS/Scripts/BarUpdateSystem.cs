@@ -28,7 +28,7 @@ public class BarUpdateSystem : JobComponentSystem
         //    public float deltaTime;
 
         public float deltaTime;
-	    
+	    public float time;
         
         [BurstCompile]
         public void Execute(ref BarComponent barComp, [ReadOnly] ref SuckedBarComponent unused, ref TornadoComponent tornadoComp, ref Translation translation)
@@ -91,7 +91,8 @@ public class BarUpdateSystem : JobComponentSystem
 					}
              */
 	        
-	        
+	        //DELETE THIS
+	        ///*
             var random = new Random(1);
 	        float startX = translation.Value.x;
 	        float startY = translation.Value.y;
@@ -231,21 +232,85 @@ public class BarUpdateSystem : JobComponentSystem
 		        barComp.oldX += (translation.Value.x - barComp.oldX) * TornadoConstants.Friction;
 		        barComp.oldZ += (translation.Value.z - barComp.oldZ) * TornadoConstants.Friction;
 	        }
-
+			//DELETE THIS
+			//*/
 	        
-	        
-
 	        /*
-	         * if (point.y < 0f) {
-						point.y = 0f;
-						point.oldY = -point.oldY;
-						point.oldX += (point.x - point.oldX) * friction;
-						point.oldZ += (point.z - point.oldZ) * friction;
+
+	        float tornadoX = tornadoComp.tornadoPos.x;
+	        float tornadoZ = tornadoComp.tornadoPos.z;
+	        float3 point = translation.Value;
+	        float tornadoMaxForceDist = 30f;
+	        float tornadoHeight = 50f;
+	        float tornadoForce = 0.022f;
+	        var random = new Random(1);
+	        float tornadoUpForce = 1.4f;
+	        float startX = translation.Value.x;
+	        float startY = translation.Value.y;
+	        float startZ = translation.Value.z;
+	        float tornadoInwardForce = 9;
+	        float damping = 0.012f;
+	        float invDamping = 1f - damping;
+	        float friction = 0.4f;
+	        if (barComp.oldX - 0f > 0.5)
+	        {
+		        barComp.oldX = point.x;
+	        }
+	        if (barComp.oldY - 0f > 0.5)
+	        {
+		        barComp.oldY = point.y;
+	        }
+	        if (barComp.oldZ - 0f > 0.5)
+	        {
+		        barComp.oldZ = point.z;
+	        }
+	         float sinheight = Mathf.Sin(point.y / 5f + time/4f) * 3f;
+	        
+             // tornado force. The tornado does not seem to actually pull differently at differet heights. It 
+					//   DOES however have sway, which is a sine wave that will act as an offset at different heights.
+					//   The sine wave does not appear to rotate though. If we could do that it would look even better.
+					float tdx = tornadoComp.tornadoPos.x + sinheight - point.x;
+					float tdz = tornadoComp.tornadoPos.z - point.z;
+					float tornadoDist = Mathf.Sqrt(tdx * tdx + tdz * tdz);
+					tdx /= tornadoDist;
+					tdz /= tornadoDist;
+					// If the tornado is too far away, don't consider it as a force at all.
+					if (tornadoDist<tornadoMaxForceDist) {
+						float force = (1f - tornadoDist / tornadoMaxForceDist);
+						float yFader= Mathf.Clamp01(1f - point.y / tornadoHeight);
+						// See above where tornadoFader is defined. Early on, this makes the tornado weaker by
+						//   multiplying the normal force (tornadoForce*Random.Range(-.3f, 1.3f) by a value that starts
+						//   at 0 early and then builds up over the next 5-10 seconds, clamping at 1.
+						force *= tornadoForce*random.NextFloat(-.3f,1.3f);
+						float forceY = tornadoUpForce;
+						barComp.oldY -= forceY * force;
+						float forceX = -tdz + tdx * tornadoInwardForce*yFader;
+						float forceZ = tdx + tdz * tornadoInwardForce*yFader;
+						barComp.oldX -= forceX * force;
+						barComp.oldZ -= forceZ * force;
 					}
-	         */
+					else
+					{
+						//gravity
+						float forceY = 1f;
+						barComp.oldY += forceY;
+					}
+					translation.Value.x -= (point.x - barComp.oldX) * invDamping;
+					translation.Value.y += (point.y - barComp.oldY) * invDamping;
+					translation.Value.z -= (point.z - barComp.oldZ) * invDamping;
+
+	        barComp.oldX = startX;
+	        barComp.oldY = startY;
+	        barComp.oldZ = startZ;
+					if (translation.Value.y < 0f) {
+						translation.Value.y = 0f;
+						barComp.oldY = -barComp.oldY;
+						barComp.oldX += (point.x - barComp.oldX) * friction;
+						barComp.oldZ += (point.z - barComp.oldZ) * friction;
+					}
 
 
-
+*/
         }
     }
     
@@ -259,6 +324,7 @@ public class BarUpdateSystem : JobComponentSystem
         //     job.deltaTime = UnityEngine.Time.deltaTime;
 
         job.deltaTime = UnityEngine.Time.deltaTime;
+	    job.time = UnityEngine.Time.time;
 
         // Now that the job is set up, schedule it to be run. 
         return job.Schedule(this, inputDependencies);
