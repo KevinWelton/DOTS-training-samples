@@ -22,7 +22,7 @@ public class BarUpdateSystem : JobComponentSystem
     // The job is also tagged with the BurstCompile attribute, which means
     // that the Burst compiler will optimize it for the best performance.
 	[BurstCompile]
-    struct BarUpdateSystemJob : IJobForEach<BarComponent, SuckedBarComponent, TornadoComponent, Translation>
+    struct BarUpdateSystemJob : IJobForEach<BarComponent, SuckedBarComponent, Translation>
     {
         // Add fields here that your job needs to do its work.
         // For example,
@@ -30,9 +30,9 @@ public class BarUpdateSystem : JobComponentSystem
 
         public float deltaTime;
 	    public float time;
+        public TornadoComponent tornadoComp;
         
-        
-        public void Execute(ref BarComponent barComp, [ReadOnly] ref SuckedBarComponent unused, ref TornadoComponent tornadoComp, ref Translation translation)
+        public void Execute(ref BarComponent barComp, [ReadOnly] ref SuckedBarComponent unused, ref Translation translation)
         {
             // Implement the work to perform for each entity here.
             // You should only access data that is local or that is a
@@ -326,6 +326,7 @@ public class BarUpdateSystem : JobComponentSystem
 
         job.deltaTime = UnityEngine.Time.deltaTime;
 	    job.time = UnityEngine.Time.time;
+        job.tornadoComp = GetSingleton<TornadoComponent>();
 
         // Now that the job is set up, schedule it to be run. 
         return job.Schedule(this, inputDependencies);

@@ -35,7 +35,6 @@ public class ConvertBarPrefab : MonoBehaviour, IConvertGameObjectToEntity
         var data = new BarComponent{};
         
         dstManager.AddComponentData(entity, new UnsuckedBarComponent());
-        dstManager.AddComponentData(entity, new TornadoComponent{});
         dstManager.AddComponentData(entity, data);
     }
 }

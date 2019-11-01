@@ -5,7 +5,7 @@ using UnityEngine;
 internal static class TornadoConstants
 {
     public const float TornadoMaxForceDistance = 30.0f;
-    public const float UpForce = 1.3f;
+    public const float UpForce = 1.2f;
     public const float InwardForce = 50f;
     public const float TornadoHeight = 50.0f;
     public const float Friction = 0.4f;

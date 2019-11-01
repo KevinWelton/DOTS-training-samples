@@ -18,16 +18,17 @@ public class ClutterUpdateSystem : JobComponentSystem
     //
     // The job is also tagged with the BurstCompile attribute, which means
     // that the Burst compiler will optimize it for the best performance.
-    struct ClutterUpdateSystemJob : IJobForEach<ClutterComponent, TornadoComponent, Translation, Rotation>
+    struct ClutterUpdateSystemJob : IJobForEach<ClutterComponent, Translation, Rotation>
     {
         // Add fields here that your job needs to do its work.
         // For example,
         //    public float deltaTime;
 
         public float deltaTime;
+        public TornadoComponent tornadoComp;
         
         [BurstCompile]
-        public void Execute(ref ClutterComponent clutterComp,ref TornadoComponent tornadoComp, ref Translation translation, ref Rotation rotation)
+        public void Execute(ref ClutterComponent clutterComp, ref Translation translation, ref Rotation rotation)
         {
             // Implement the work to perform for each entity here.
             // You should only access data that is local or that is a
@@ -56,6 +57,7 @@ public class ClutterUpdateSystem : JobComponentSystem
         //     job.deltaTime = UnityEngine.Time.deltaTime;
 
         job.deltaTime = UnityEngine.Time.deltaTime;
+        job.tornadoComp = GetSingleton<TornadoComponent>();
         
         // Now that the job is set up, schedule it to be run. 
         return job.Schedule(this, inputDependencies);

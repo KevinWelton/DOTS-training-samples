@@ -12,8 +12,10 @@ public class BarSuckSystem : ComponentSystem
 {
     protected override void OnUpdate()
     {
-        Entities.WithAll<BarComponent, TornadoComponent, Translation, UnsuckedBarComponent>().ForEach(
-            (Entity id, ref BarComponent bar, ref TornadoComponent tor, ref Translation t) =>
+        var tor = GetSingleton<TornadoComponent>();
+
+        Entities.WithAll<BarComponent, Translation, UnsuckedBarComponent>().ForEach(
+            (Entity id, ref BarComponent bar, ref Translation t) =>
             {
                 float tdx = (tor.tornadoPos.x - t.Value.x);
                 float tdz = (tor.tornadoPos.z - t.Value.z);
