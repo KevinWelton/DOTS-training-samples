@@ -7,7 +7,6 @@ using UnityEngine;
 [Serializable]
 public struct BarComponent : IComponentData
 {
-    internal float3 velocity;
     internal float oldX;
     internal float oldY;
     internal float oldZ;

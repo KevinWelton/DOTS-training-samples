@@ -65,12 +65,12 @@ public class ClutterSpawnSystem : JobComponentSystem
                 // Uniform start http://mathworld.wolfram.com/ConicalSpiral.html (y, z) reversed
 
                 //var y = i * comp.Height / comp.Count;
-                var y = random.NextFloat(0f, 50.0f);
+                var y = random.NextFloat(0f, TornadoConstants.ClutterHeight);
                 var scale = y / comp.Height;
                 var a = 2 * math.PI * i / comp.Count;
 
-                var x = scale * comp.Radius * (float)math.cos(a);
-                var z = scale * comp.Radius * (float)math.sin(a);
+                var x = scale * (comp.Radius + random.NextFloat(-2, 2)) * (float)math.cos(a);
+                var z = scale * (comp.Radius + random.NextFloat(-2, 2)) * (float)math.sin(a);
 
                 var position = math.transform(location.Value, new float3(x, y, z));
                 var axis = new float3(0, 1, 0);

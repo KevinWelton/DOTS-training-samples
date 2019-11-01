@@ -48,12 +48,12 @@ public class ClutterUpdateSystem : JobComponentSystem
             var delta = tornadoPos - translation.Value;
             float dist = math.length(delta);
             delta /= dist;
-            float inForce = dist - Mathf.Clamp01(tornadoPos.y / 50f) * 30f * 0.5f + 2f;
+            float inForce = dist - Mathf.Clamp01(tornadoPos.y / TornadoConstants.ClutterHeight) * 30f * 0.5f + 2f;
             translation.Value += new float3(-delta.z * 30 + delta.x * inForce, TornadoConstants.TornadoUpForce, delta.x * 30 + delta.z * inForce) * deltaTime;
 
-            if (translation.Value.y > 50f)
+            if (translation.Value.y > TornadoConstants.ClutterHeight)
             {
-                translation.Value = new float3(translation.Value.x, translation.Value.y - 50f, translation.Value.z);
+                translation.Value = new float3(translation.Value.x, translation.Value.y - TornadoConstants.ClutterHeight, translation.Value.z);
             }
         }
     }

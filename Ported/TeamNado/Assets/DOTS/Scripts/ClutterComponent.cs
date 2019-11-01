@@ -8,5 +8,4 @@ using UnityEngine;
 public struct ClutterComponent : IComponentData
 {
     public float3 position;
-    internal float angle;
 }
