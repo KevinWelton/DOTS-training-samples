@@ -66,8 +66,8 @@ public class BarUpdateSystem : JobComponentSystem
 				force *= TornadoConstants.TornadoForce*random.NextFloat(-.3f,1.3f);
 				float forceY = TornadoConstants.TornadoUpForce;
 				barComp.oldY -= forceY * force;
-				float forceX = -tdz + tdx * TornadoConstants.TornadoInwardForce;//*yFader;
-				float forceZ = tdx + tdz * TornadoConstants.TornadoInwardForce;//*yFader;
+				float forceX = -tdz + tdx * TornadoConstants.TornadoInwardForce*yFader;
+				float forceZ = tdx + tdz * TornadoConstants.TornadoInwardForce*yFader;
 				barComp.oldX -= forceX * force;
 				barComp.oldZ -= forceZ * force;
 			}
