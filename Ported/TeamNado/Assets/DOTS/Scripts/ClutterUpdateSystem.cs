@@ -25,6 +25,7 @@ public class ClutterUpdateSystem : JobComponentSystem
         //    public float deltaTime;
 
         public float deltaTime;
+        public float Time;
         public TornadoComponent tornadoComp;
         
         [BurstCompile]
@@ -39,11 +40,21 @@ public class ClutterUpdateSystem : JobComponentSystem
             // For example,
             //     translation.Value += mul(rotation.Value, new float3(0, 0, 1)) * deltaTime;
 
-            var delta = tornadoComp.tornadoPos - clutterComp.position;
-            translation.Value += delta;
-            clutterComp.angle += deltaTime;
-            clutterComp.position = tornadoComp.tornadoPos;
-            rotation.Value = quaternion.AxisAngle(new float3(0, 1, 0), clutterComp.angle);
+            float3 tornadoPos = new float3(
+                Mathf.Cos(Time / 6f) * 30f + Mathf.Sin((translation.Value.y) / 5f + Time / 4f) * 3f,
+                translation.Value.y,
+                Mathf.Sin(Time / 6f * 1.618f) * 30f);
+            
+            var delta = tornadoPos - translation.Value;
+            float dist = math.length(delta);
+            delta /= dist;
+            float inForce = dist - Mathf.Clamp01(tornadoPos.y / 50f) * 30f * 0.5f + 2f;
+            translation.Value += new float3(-delta.z * 30 + delta.x * inForce, TornadoConstants.UpForce, delta.x * 30 + delta.z * inForce) * deltaTime;
+
+            if (translation.Value.y > 50f)
+            {
+                translation.Value = new float3(translation.Value.x, translation.Value.y - 50f, translation.Value.z);
+            }
         }
     }
     
@@ -57,6 +68,7 @@ public class ClutterUpdateSystem : JobComponentSystem
         //     job.deltaTime = UnityEngine.Time.deltaTime;
 
         job.deltaTime = UnityEngine.Time.deltaTime;
+        job.Time = UnityEngine.Time.time;
         job.tornadoComp = GetSingleton<TornadoComponent>();
         
         // Now that the job is set up, schedule it to be run. 

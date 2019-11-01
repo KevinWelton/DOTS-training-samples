@@ -25,6 +25,7 @@ public class TornadoUpdateSystem : JobComponentSystem
         //    public float deltaTime;
 
         public float time;
+        public float deltaTime;
         
         [BurstCompile]
         public void Execute(ref TornadoComponent tornadoComp, ref Translation translation)
@@ -40,10 +41,16 @@ public class TornadoUpdateSystem : JobComponentSystem
 
             //clutterComp.velocity = translation.Value - new float3(0f,0f,0f);
             //translation.Value = clutterComp.velocity * deltaTime;
-            var tornadoX = math.cos(time / 6f) * 30f;
+/*            var tornadoX = math.cos(time / 6f) * 30f;
             var tornadoZ = math.sin(time / 6f * 1.618f) * 30f;
             tornadoComp.tornadoPos.x = tornadoX;
-            tornadoComp.tornadoPos.z = tornadoZ;
+            tornadoComp.tornadoPos.z = tornadoZ;*/
+
+            tornadoComp.tornadoPos = new float3(
+                Mathf.Cos(time / 6f) * 30f + Mathf.Sin((translation.Value.y) / 5f + time / 4f) * 3f,
+                translation.Value.y,
+                Mathf.Sin(time / 6f * 1.618f) * 30f);
+            
             //translation.Value += new float3(tornadoX, 0f, tornadoZ);
         }
     }
@@ -58,6 +65,7 @@ public class TornadoUpdateSystem : JobComponentSystem
         //     job.deltaTime = UnityEngine.Time.deltaTime;
 
         job.time = UnityEngine.Time.time;
+        job.deltaTime = UnityEngine.Time.deltaTime;
 
         // Now that the job is set up, schedule it to be run. 
         return job.Schedule(this, inputDependencies);

@@ -64,7 +64,8 @@ public class ClutterSpawnSystem : JobComponentSystem
 
                 // Uniform start http://mathworld.wolfram.com/ConicalSpiral.html (y, z) reversed
 
-                var y = i * comp.Height / comp.Count;
+                //var y = i * comp.Height / comp.Count;
+                var y = random.NextFloat(0f, 50.0f);
                 var scale = y / comp.Height;
                 var a = 2 * math.PI * i / comp.Count;
 
@@ -75,7 +76,7 @@ public class ClutterSpawnSystem : JobComponentSystem
                 var axis = new float3(0, 1, 0);
 
                 CommandBuffer.SetComponent(index, instance, new Translation { Value = position });
-                CommandBuffer.SetComponent(index, instance, new Rotation { Value = quaternion.AxisAngle(axis, 0f) });
+                CommandBuffer.SetComponent(index, instance, new Rotation { Value = quaternion.AxisAngle(axis, random.NextFloat(0f, 6.2832f)) });
             }
 
             CommandBuffer.DestroyEntity(index, entity);
