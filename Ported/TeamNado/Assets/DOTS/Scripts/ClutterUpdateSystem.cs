@@ -49,7 +49,7 @@ public class ClutterUpdateSystem : JobComponentSystem
             float dist = math.length(delta);
             delta /= dist;
             float inForce = dist - Mathf.Clamp01(tornadoPos.y / 50f) * 30f * 0.5f + 2f;
-            translation.Value += new float3(-delta.z * 30 + delta.x * inForce, TornadoConstants.UpForce, delta.x * 30 + delta.z * inForce) * deltaTime;
+            translation.Value += new float3(-delta.z * 30 + delta.x * inForce, TornadoConstants.TornadoUpForce, delta.x * 30 + delta.z * inForce) * deltaTime;
 
             if (translation.Value.y > 50f)
             {

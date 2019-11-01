@@ -31,288 +31,143 @@ public class BarUpdateSystem : JobComponentSystem
         public float deltaTime;
 	    public float time;
         public TornadoComponent tornadoComp;
+        public Random random;
         
         public void Execute(ref BarComponent barComp, [ReadOnly] ref SuckedBarComponent unused, ref Translation translation)
         {
-            // Implement the work to perform for each entity here.
-            // You should only access data that is local or that is a
-            // field on this job. Note that the 'rotation' parameter is
-            // marked as [ReadOnly], which means it cannot be modified,
-            // but allows this job to run in parallel with other jobs
-            // that want to read Rotation component data.
-            // For example,
-            //     translation.Value += mul(rotation.Value, new float3(0, 0, 1)) * deltaTime;
-            
-            //barComp.velocity 
-            
-            
-            //dx is x distance to tornado
-            //dz is z distance to tornado
-            //translation.Value += new float3(-delta.z * tornado.spinRate + delta.x * inForce, tornado.upwardSpeed, delta.x * tornado.spinRate + delta.z * inForce) * deltaTime;
-	        
-	        
-	        //this is raw code i ported
-            /*
-             * // tornado force. The tornado does not seem to actually pull differently at differet heights. It 
-					//   DOES however have sway, which is a sine wave that will act as an offset at different heights.
-					//   The sine wave does not appear to rotate though. If we could do that it would look even better.
-					float tdx = tornadoX+TornadoSway(point.y) - point.x;
-					float tdz = tornadoZ - point.z;
-					float tornadoDist = Mathf.Sqrt(tdx * tdx + tdz * tdz);
-					tdx /= tornadoDist;
-					tdz /= tornadoDist;
-					// If the tornado is too far away, don't consider it as a force at all.
-					if (tornadoDist<tornadoMaxForceDist) {
-						float force = (1f - tornadoDist / tornadoMaxForceDist);
-						float yFader= Mathf.Clamp01(1f - point.y / tornadoHeight);
-						// See above where tornadoFader is defined. Early on, this makes the tornado weaker by
-						//   multiplying the normal force (tornadoForce*Random.Range(-.3f, 1.3f) by a value that starts
-						//   at 0 early and then builds up over the next 5-10 seconds, clamping at 1.
-						force *= tornadoFader*tornadoForce*Random.Range(-.3f,1.3f);
-						float forceY = tornadoUpForce;
-						point.oldY -= forceY * force;
-						float forceX = -tdz + tdx * tornadoInwardForce*yFader;
-						float forceZ = tdx + tdz * tornadoInwardForce*yFader;
-						point.oldX -= forceX * force;
-						point.oldZ -= forceZ * force;
-					}
+		// There are two phases: world generation and not world generation.
+		//if (generating == false) {
+			// I thought "why clamp this?" so I took out the clamp call. Leave it clamped. This value slowly grows over
+			//   time. Once it gets to 1, the tornado is at "max strength". Increasing it further makes the tornado
+			//   cat 11.
+			//tornadoFader = Mathf.Clamp01(tornadoFader + Time.deltaTime / 10f);
 
-					point.x += (point.x - point.oldX) * invDamping;
-					point.y += (point.y - point.oldY) * invDamping;
-					point.z += (point.z - point.oldZ) * invDamping;
+			float invDamping = 1f - TornadoConstants.Damping;
 
-					point.oldX = startX;
-					point.oldY = startY;
-					point.oldZ = startZ;
-					if (point.y < 0f) {
-						point.y = 0f;
-						point.oldY = -point.oldY;
-						point.oldX += (point.x - point.oldX) * friction;
-						point.oldZ += (point.z - point.oldZ) * friction;
-					}
-             */
-	        
-	        //DELETE THIS
-	        ///*
-            var random = new Random(1);
-	        float startX = translation.Value.x;
-	        float startY = translation.Value.y;
-	        float startZ = translation.Value.z;
+			var start = translation;
 
-	        float shearX = 0f;
-	        float shearZ = 0f;
-	        
-	        float tdx = (tornadoComp.tornadoPos.x - translation.Value.x);
-	        float tdz = (tornadoComp.tornadoPos.z - translation.Value.z);
-	        float tornadoDist = Mathf.Sqrt(tdx * tdx + tdz * tdz);
-	        //tdx and tdz are the components of a unit vector towards the tornado
-	        
-	        //at the beginning of the frame, the bar undergoes gravity
-	        //barComp.velocity.y = TornadoConstants.Gravity;
-	        //float yAccel = TornadoConstants.Gravity;
-	        
-	        //distance in the x and z direction from the nado
-	        tdx /= tornadoDist;
-	        tdz /= tornadoDist;
+			barComp.oldY += .01f;
 
-	        float forceY = 0;
-	        if (translation.Value.y > 0.1)
-	        {
-		        forceY += TornadoConstants.Gravity;
-	        }
-	        // If the tornado is too far away, don't consider it as a force at all.
-	        if (tornadoDist<TornadoConstants.TornadoMaxForceDistance) {
-		        
-		        float force = (1f - tornadoDist / TornadoConstants.TornadoMaxForceDistance);
-		        float yFader= Mathf.Clamp01(1f - translation.Value.y / TornadoConstants.TornadoHeight);
-		        // See above where tornadoFader is defined. Early on, this makes the tornado weaker by
-		        //   multiplying the normal force (tornadoForce*Random.Range(-.3f, 1.3f) by a value that starts
-		        //   at 0 early and then builds up over the next 5-10 seconds, clamping at 1.
-		        force *= 0.22f * random.NextFloat(-.3f, 1.3f);//Range(-.3f,1.3f);
-		        
-		        
-		        
-		        
-		        //if (force > TornadoConstants.MaxForce)
-		        //{
-			    //    force = TornadoConstants.MaxForce;
-		        //}
-		        
-		        //force is now the force we want applied to the bars
-		        
-		        
-		        float forceX = tdx * force * TornadoConstants.InwardForce * yFader;//-tdz + tdx * force * TornadoConstants.InwardForce * yFader;
-		        float forceZ = tdz * force * TornadoConstants.InwardForce * yFader;//tdx + tdz * force  * TornadoConstants.InwardForce *yFader;
-		        
-		        
-		        
-		        //OK, tornadoes do a little bit of shear force to make it spin right round
-		        shearX += -tdz + tdx *  force * 0.001f;
-		        shearZ += tdx + tdz * force* 0.001f;
-		        
-		        
-		        //forceX and forceZ are the component force vectors we want applied
+			// tornado force. The tornado does not seem to actually pull differently at differet heights. It 
+			//   DOES however have sway, which is a sine wave that will act as an offset at different heights.
+			//   The sine wave does not appear to rotate though. If we could do that it would look even better.
+			float tdx = tornadoComp.tornadoPos.x - translation.Value.x;
+			float tdz = tornadoComp.tornadoPos.z - translation.Value.z;
+			float tornadoDist = Mathf.Sqrt(tdx * tdx + tdz * tdz);
+			tdx /= tornadoDist;
+			tdz /= tornadoDist;
+			// If the tornado is too far away, don't consider it as a force at all.
+			if (tornadoDist<TornadoConstants.TornadoMaxForceDistance) {
+				float force = (1f - tornadoDist / TornadoConstants.TornadoMaxForceDistance);
+				float yFader= Mathf.Clamp01(1f - translation.Value.y / TornadoConstants.TornadoHeight);
+				// See above where tornadoFader is defined. Early on, this makes the tornado weaker by
+				//   multiplying the normal force (tornadoForce*Random.Range(-.3f, 1.3f) by a value that starts
+				//   at 0 early and then builds up over the next 5-10 seconds, clamping at 1.
+				force *= TornadoConstants.TornadoForce*random.NextFloat(-.3f,1.3f);
+				float forceY = TornadoConstants.TornadoUpForce;
+				barComp.oldY -= forceY * force;
+				float forceX = -tdz + tdx;// * tornadoInwardForce*yFader;
+				float forceZ = tdx + tdz;// * tornadoInwardForce*yFader;
+				barComp.oldX -= forceX * force;
+				barComp.oldZ -= forceZ * force;
+			}
 
-		        
-		        if (translation.Value.y < TornadoConstants.TornadoHeight)
-		        {
-			        forceY += TornadoConstants.UpForce * Mathf.Clamp(( 10/tornadoDist),0,1);
-			        //forceY = TornadoConstants.UpForce * (1/tornadoDist);//TornadoConstants.TornadoMaxForceDistance);
-		        }
+			translation.Value.x += (translation.Value.x - barComp.oldX) * invDamping;
+			translation.Value.y += (translation.Value.y - barComp.oldY) * invDamping;
+			translation.Value.z += (translation.Value.z - barComp.oldZ) * invDamping;
 
-		        //forceY += yAccel;
-
-		        barComp.velocity.x += forceX;
-		        barComp.velocity.z += forceZ;
-		        barComp.velocity.y += forceY;
-		        //OLD VALUES NOT REALLY USED!!!
-
-				
-
-		        //float3 tempForce = new float3(-tdz + tdx, forceY, tdx + tdz) * force;
-		        //barComp.oldX -= forceX;
-		        //barComp.oldZ -= forceZ;
-		        //technically new position
-		        //barComp.oldX -= forceX * deltaTime;
-		        //barComp.oldY -= forceZ * deltaTime;
-		        //
-
-		        //IF SOMETHING IS WRONG LOOK HERE!
-		        //barComp.velocity.x += forceX * deltaTime;
-		        //barComp.velocity.y += forceY * deltaTime;
-		        //barComp.velocity.z += forceZ * deltaTime;
-	        }
-	        
-			//the previous example found the change in position since last frame, which is the velocity times time
-	        //translation.Value.x = (barComp.velocity.x * deltaTime) * (1f - TornadoConstants.Damping);
-	        //translation.Value.y = (barComp.velocity.y * deltaTime) * (1f - TornadoConstants.Damping);
-	        //translation.Value.z = (barComp.velocity.z * deltaTime) * (1f - TornadoConstants.Damping);
-			else
-	        {
-		        if (barComp.velocity.x > 0)
-		        {
-			        barComp.velocity.x -= TornadoConstants.Friction;
-		        }
-		        else if (barComp.velocity.x < 0)
-		        {
-			        barComp.velocity.x += TornadoConstants.Friction;
-		        }
-		        if (barComp.velocity.z> 0)
-		        {
-			        barComp.velocity.z -= TornadoConstants.Friction;
-		        }
-		        else if (barComp.velocity.z < 0)
-		        {
-			        barComp.velocity.z += TornadoConstants.Friction;
-		        }
-		        //barComp.velocity.x = 0;
-		        //barComp.velocity.z =0;
-	        }
-
-	        //gravity is always applied
-	        barComp.velocity.y += forceY;
-	        barComp.velocity.x += shearX;
-	        barComp.velocity.z += shearZ;
-
-	        barComp.velocity.x *=  (1f - TornadoConstants.Damping);
-	        barComp.velocity.z *=  (1f - TornadoConstants.Damping);
-	        //this is dumb.
-	        translation.Value.x -= barComp.velocity.x * deltaTime*0.1f; //* (1f - TornadoConstants.Damping);//(translation.Value.x - barComp.oldX) * (1f - TornadoConstants.Damping);
-	        translation.Value.y += barComp.velocity.y * deltaTime*0.1f;//* (1f - TornadoConstants.Damping);//(translation.Value.y - barComp.oldY) * (1f - TornadoConstants.Damping);
-	        translation.Value.z -= barComp.velocity.z * deltaTime*0.1f; //* (1f - TornadoConstants.Damping);//(translation.Value.z - barComp.oldZ) * (1f - TornadoConstants.Damping);
-
-	        //translation.Value.x -= shearX* (1f - TornadoConstants.Damping);
-	        // translation.Value.z -= shearZ* (1f - TornadoConstants.Damping);
-			
-	        barComp.oldX = startX;
-	        barComp.oldY = startY;
-	        barComp.oldZ = startZ;
-	        if (translation.Value.y < 0f) {
-		        translation.Value.y = 0f;
-		        barComp.oldY = -barComp.oldY;
-		        barComp.oldX += (translation.Value.x - barComp.oldX) * TornadoConstants.Friction;
-		        barComp.oldZ += (translation.Value.z - barComp.oldZ) * TornadoConstants.Friction;
-	        }
-			//DELETE THIS
-			//*/
-	        
-	        /*
-
-	        float tornadoX = tornadoComp.tornadoPos.x;
-	        float tornadoZ = tornadoComp.tornadoPos.z;
-	        float3 point = translation.Value;
-	        float tornadoMaxForceDist = 30f;
-	        float tornadoHeight = 50f;
-	        float tornadoForce = 0.022f;
-	        var random = new Random(1);
-	        float tornadoUpForce = 1.4f;
-	        float startX = translation.Value.x;
-	        float startY = translation.Value.y;
-	        float startZ = translation.Value.z;
-	        float tornadoInwardForce = 9;
-	        float damping = 0.012f;
-	        float invDamping = 1f - damping;
-	        float friction = 0.4f;
-	        if (barComp.oldX - 0f > 0.5)
-	        {
-		        barComp.oldX = point.x;
-	        }
-	        if (barComp.oldY - 0f > 0.5)
-	        {
-		        barComp.oldY = point.y;
-	        }
-	        if (barComp.oldZ - 0f > 0.5)
-	        {
-		        barComp.oldZ = point.z;
-	        }
-	         float sinheight = Mathf.Sin(point.y / 5f + time/4f) * 3f;
-	        
-             // tornado force. The tornado does not seem to actually pull differently at differet heights. It 
-					//   DOES however have sway, which is a sine wave that will act as an offset at different heights.
-					//   The sine wave does not appear to rotate though. If we could do that it would look even better.
-					float tdx = tornadoComp.tornadoPos.x + sinheight - point.x;
-					float tdz = tornadoComp.tornadoPos.z - point.z;
-					float tornadoDist = Mathf.Sqrt(tdx * tdx + tdz * tdz);
-					tdx /= tornadoDist;
-					tdz /= tornadoDist;
-					// If the tornado is too far away, don't consider it as a force at all.
-					if (tornadoDist<tornadoMaxForceDist) {
-						float force = (1f - tornadoDist / tornadoMaxForceDist);
-						float yFader= Mathf.Clamp01(1f - point.y / tornadoHeight);
-						// See above where tornadoFader is defined. Early on, this makes the tornado weaker by
-						//   multiplying the normal force (tornadoForce*Random.Range(-.3f, 1.3f) by a value that starts
-						//   at 0 early and then builds up over the next 5-10 seconds, clamping at 1.
-						force *= tornadoForce*random.NextFloat(-.3f,1.3f);
-						float forceY = tornadoUpForce;
-						barComp.oldY -= forceY * force;
-						float forceX = -tdz + tdx * tornadoInwardForce*yFader;
-						float forceZ = tdx + tdz * tornadoInwardForce*yFader;
-						barComp.oldX -= forceX * force;
-						barComp.oldZ -= forceZ * force;
-					}
-					else
-					{
-						//gravity
-						float forceY = 1f;
-						barComp.oldY += forceY;
-					}
-					translation.Value.x -= (point.x - barComp.oldX) * invDamping;
-					translation.Value.y += (point.y - barComp.oldY) * invDamping;
-					translation.Value.z -= (point.z - barComp.oldZ) * invDamping;
-
-	        barComp.oldX = startX;
-	        barComp.oldY = startY;
-	        barComp.oldZ = startZ;
-					if (translation.Value.y < 0f) {
-						translation.Value.y = 0f;
-						barComp.oldY = -barComp.oldY;
-						barComp.oldX += (point.x - barComp.oldX) * friction;
-						barComp.oldZ += (point.z - barComp.oldZ) * friction;
-					}
+			barComp.oldX = start.Value.x;
+			barComp.oldY = start.Value.y;
+			barComp.oldZ = start.Value.z;
+			if (translation.Value.y < 0f) {
+				translation.Value.y = 0f;
+				barComp.oldY = -barComp.oldY;
+				barComp.oldX += (translation.Value.x - barComp.oldX) * TornadoConstants.Friction;
+				barComp.oldZ += (translation.Value.z - barComp.oldZ) * TornadoConstants.Friction;
+			}
 
 
-*/
-        }
+//					Point point1 = bar.point1;
+//				Point point2 = bar.point2;
+//				//the length of the bar
+//				float dx = point2.x - point1.x;
+//				float dy = point2.y - point1.y;
+//				float dz = point2.z - point1.z;
+//				//dist is length of the bar after ALL forces were applied to it
+//				float dist = Mathf.Sqrt(dx * dx + dy * dy + dz * dz);
+//				// Will these 4 deformations values ever be nonzero in flight, or only when the building hits the
+//				// extra dist is the amount of stretch
+//				float extraDist = dist - bar.length;
+//
+//				float pushX = (dx / dist * extraDist) * .5f;
+//				float pushY = (dy / dist * extraDist) * .5f;
+//				float pushZ = (dz / dist * extraDist) * .5f;
+//
+//				if (point1.anchor == false && point2.anchor == false) {
+//					point1.x += pushX;
+//					point1.y += pushY;
+//					point1.z += pushZ;
+//					point2.x -= pushX;
+//					point2.y -= pushY;
+//					point2.z -= pushZ;
+//				} else if (point1.anchor) {
+//					point2.x -= pushX*2f;
+//					point2.y -= pushY*2f;
+//					point2.z -= pushZ*2f;
+//				} else if (point2.anchor) {
+//					point1.x += pushX*2f;
+//					point1.y += pushY*2f;
+//					point1.z += pushZ*2f;
+//				}
+//
+//				if (dx/dist * bar.oldDX + dy/dist*bar.oldDY + dz/dist*bar.oldDZ<.99f) {
+//					// bar has rotated: expensive full-matrix computation
+//					bar.matrix = Matrix4x4.TRS(new Vector3((point1.x + point2.x) * .5f,(point1.y + point2.y) * .5f,(point1.z + point2.z) * .5f),
+//										   Quaternion.LookRotation(new Vector3(dx,dy,dz)),
+//										   new Vector3(bar.thickness,bar.thickness,bar.length));
+//					bar.oldDX = dx / dist;
+//					bar.oldDY = dy / dist;
+//					bar.oldDZ = dz / dist;
+//				} else {
+//					// bar hasn't rotated: only update the position elements
+//					Matrix4x4 matrix = bar.matrix;
+//					matrix.m03 = (point1.x + point2.x) * .5f;
+//					matrix.m13 = (point1.y + point2.y) * .5f;
+//					matrix.m23 = (point1.z + point2.z) * .5f;
+//					bar.matrix = matrix;
+				}
+
+//				if (Mathf.Abs(extraDist) > breakResistance) {
+//					if (point2.neighborCount>1) {
+//						point2.neighborCount--;
+//						Point newPoint = new Point();
+//						newPoint.CopyFrom(point2);
+//						newPoint.neighborCount = 1;
+//						points[pointCount] = newPoint;
+//						bar.point2 = newPoint;
+//						pointCount++;
+//					} else if (point1.neighborCount>1) {
+//						point1.neighborCount--;
+//						Point newPoint = new Point();
+//						newPoint.CopyFrom(point1);
+//						newPoint.neighborCount = 1;
+//						points[pointCount] = newPoint;
+//						bar.point1 = newPoint;
+//						pointCount++;
+//					}
+//				}
+
+//				//these values dont get referenced ever...
+//				//nothing to see here, move along
+//				bar.minX = Mathf.Min(point1.x,point2.x);
+//				bar.maxX = Mathf.Max(point1.x,point2.x);
+//				bar.minY = Mathf.Min(point1.y,point2.y);
+//				bar.maxY = Mathf.Max(point1.y,point2.y);
+//				bar.minZ = Mathf.Min(point1.z,point2.z);
+//				bar.maxZ = Mathf.Max(point1.z,point2.z);
+//
+//				matrices[i / instancesPerBatch][i % instancesPerBatch] = bar.matrix;
+	    //}
     }
     
     protected override JobHandle OnUpdate(JobHandle inputDependencies)
@@ -327,6 +182,7 @@ public class BarUpdateSystem : JobComponentSystem
         job.deltaTime = UnityEngine.Time.deltaTime;
 	    job.time = UnityEngine.Time.time;
         job.tornadoComp = GetSingleton<TornadoComponent>();
+        job.random = new Random((uint)UnityEngine.Random.Range(int.MinValue, int.MaxValue));
 
         // Now that the job is set up, schedule it to be run. 
         return job.Schedule(this, inputDependencies);

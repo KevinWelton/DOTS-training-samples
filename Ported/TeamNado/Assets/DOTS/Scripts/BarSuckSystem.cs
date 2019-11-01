@@ -24,6 +24,11 @@ public class BarSuckSystem : ComponentSystem
                 {
                     EntityManager.RemoveComponent<UnsuckedBarComponent>(id);
                     EntityManager.AddComponentData(id, new SuckedBarComponent());
+
+                    //bar.velocity.y = TornadoConstants.TornadoUpForce;
+                    bar.oldX = t.Value.x;
+                    bar.oldY = t.Value.y;
+                    bar.oldZ = t.Value.z;
                 }
             });
     }
