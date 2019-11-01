@@ -9,8 +9,8 @@ using UnityEngine;
 using static Unity.Mathematics.math;
 using Random = Unity.Mathematics.Random;
 
-//[UpdateInGroup(typeof(SimulationSystemGroup))]
-//[UpdateAfter(typeof(BarSuckSystem))]
+[UpdateInGroup(typeof(SimulationSystemGroup))]
+[UpdateAfter(typeof(BarSuckSystem))]
 public class BarUpdateSystem : JobComponentSystem
 {
 	// This declares a new kind of job, which is a unit of work to do.
