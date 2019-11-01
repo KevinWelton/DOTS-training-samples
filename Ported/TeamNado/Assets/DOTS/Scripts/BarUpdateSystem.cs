@@ -42,8 +42,6 @@ public class BarUpdateSystem : JobComponentSystem
 			//   cat 11.
 			//tornadoFader = Mathf.Clamp01(tornadoFader + Time.deltaTime / 10f);
 
-			float invDamping = 1f - TornadoConstants.Damping;
-
 			var start = translation;
 
 			barComp.oldY += .01f;
@@ -72,9 +70,9 @@ public class BarUpdateSystem : JobComponentSystem
 				barComp.oldZ -= forceZ * force;
 			}
 
-			translation.Value.x += (translation.Value.x - barComp.oldX) * invDamping;
-			translation.Value.y += (translation.Value.y - barComp.oldY) * invDamping;
-			translation.Value.z += (translation.Value.z - barComp.oldZ) * invDamping;
+			translation.Value.x += (translation.Value.x - barComp.oldX) * TornadoConstants.InverseDamping;
+			translation.Value.y += (translation.Value.y - barComp.oldY) * TornadoConstants.InverseDamping;
+			translation.Value.z += (translation.Value.z - barComp.oldZ) * TornadoConstants.InverseDamping;
 
 			barComp.oldX = start.Value.x;
 			barComp.oldY = start.Value.y;
