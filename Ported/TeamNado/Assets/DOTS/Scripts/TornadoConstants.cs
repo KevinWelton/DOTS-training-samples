@@ -14,6 +14,7 @@ internal static class TornadoConstants
     public const float MaxForce = 30.0f;
     public const float Gravity = -1.0f;
     public const float TornadoForce = 0.022f;
+    public const float TornadoInwardForce = 9.0f;
 
     //public const float BreakResistance = 0.55f;
 }
