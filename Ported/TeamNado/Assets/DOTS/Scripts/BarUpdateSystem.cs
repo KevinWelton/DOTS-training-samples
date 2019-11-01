@@ -49,7 +49,7 @@ public class BarUpdateSystem : JobComponentSystem
 			// tornado force. The tornado does not seem to actually pull differently at differet heights. It 
 			//   DOES however have sway, which is a sine wave that will act as an offset at different heights.
 			//   The sine wave does not appear to rotate though. If we could do that it would look even better.
-			float tdx = tornadoComp.tornadoPos.x - translation.Value.x;
+			float tdx = tornadoComp.tornadoPos.x + Mathf.Sin(translation.Value.y / 5f + time / 4f) * 3f - translation.Value.x;
 			float tdz = tornadoComp.tornadoPos.z - translation.Value.z;
 			float tornadoDist = Mathf.Sqrt(tdx * tdx + tdz * tdz);
 			tdx /= tornadoDist;
@@ -57,7 +57,7 @@ public class BarUpdateSystem : JobComponentSystem
 			// If the tornado is too far away, don't consider it as a force at all.
 			if (tornadoDist<TornadoConstants.TornadoMaxForceDistance) {
 				float force = (1f - tornadoDist / TornadoConstants.TornadoMaxForceDistance);
-				float yFader= Mathf.Clamp01(1f - translation.Value.y / TornadoConstants.TornadoHeight);
+				float yFader= Mathf.Clamp(1f - translation.Value.y / TornadoConstants.TornadoHeight,0f,1f);
 				// See above where tornadoFader is defined. Early on, this makes the tornado weaker by
 				//   multiplying the normal force (tornadoForce*Random.Range(-.3f, 1.3f) by a value that starts
 				//   at 0 early and then builds up over the next 5-10 seconds, clamping at 1.
